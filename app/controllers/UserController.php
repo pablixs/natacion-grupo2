@@ -67,18 +67,23 @@ class UserController extends BaseController {
             'email'          => trim( $_POST[ 'email' ] ?? '' ),
             'password'       => $_POST[ 'password' ] ?? '',
             'passwordrepeat' => $_POST['passwordrepeat'] ?? '',
+            'birth_date' => trim($_POST['birth_date'] ?? ''),
             'phone'          => trim( $_POST[ 'telefono' ] ?? '' ),
             'profile_image'  => 'default-profile.png' // Valor por defecto
         ];
-
+ 
         
         // 2. Validaciones Críticas ( Uso de 'Early Returns' para evitar anidación de IFs )
         if ( $this->hasEmptyFields( $fields ) ) {
             return $this->json( 'warning', 'Faltan datos obligatorios.' );
-            }
-            
-        // Validando contraseña repetida
+        }
 
+        // Validando minimo y maximo de numero de telefono
+        if(strlen($fields['phone']) < 6 || strlen($fields['phone']) > 15){
+            return $this->json( 'warning', 'El número de teléfono debe tener de 6 a 15 números' );
+        }
+
+        // Validando contraseña repetida
          if ($fields['password'] !== $fields['passwordrepeat']){
             return $this->json( 'warning', 'Las contraseñas no coinciden' );
          }
@@ -156,7 +161,7 @@ class UserController extends BaseController {
             $userId = $this->userModel->create( [
                 'email'    => $f[ 'email' ],
                 'password' => $f[ 'password' ],
-                'role_id'  => 3 // Rol Swimmer
+                'role_id'  => 3, // Rol Swimmer
             ] );
 
             if ( !$userId ) throw new Exception( 'Error al crear credenciales.' );
@@ -295,6 +300,6 @@ class UserController extends BaseController {
     }
 
     private function hasEmptyFields( $f ) {
-        return empty( $f[ 'first_name' ] ) || empty( $f[ 'last_name' ] ) || empty( $f[ 'email' ] ) || empty( $f[ 'password' ] );
+        return empty( $f[ 'first_name' ] ) || empty( $f[ 'last_name' ] ) || empty( $f[ 'email' ] ) || empty( $f[ 'password' ] || empty ($f['phone'] || empty ($f['birth_date'])));
     }
 }

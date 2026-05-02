@@ -21,6 +21,7 @@
                                     <input type="email" name="email" class="form-control" placeholder="juan@correo.com"
                                         required>
                                 </div>
+                               
                                 <div class="mb-3">
                                     <label class="form-label">Contraseña</label>
                                     <input type="password" name="password" class="form-control"
@@ -30,6 +31,8 @@
                                     <label class="form-label">Foto de Perfil</label>
                                     <input type="file" name="profile_image" class="form-control" accept="image/*">
                                 </div>
+
+                                
                             </div>
 
                             <div class="col-md-6">
@@ -40,12 +43,17 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Teléfono</label>
-                                    <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678">
+                                    <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Repetir contraseña</label>
                                     <input type="password" name="passwordrepeat" class="form-control"
                                         placeholder="Mín. 6 caracteres" required>
+                                </div>
+                                 <div class="mb-3">
+                                    <label class="form-label">Fecha de nacimiento</label>
+                                    <input type="date" name="birth_date" class="form-control"
+                                        required>
                                 </div>
                                 
                             </div>
