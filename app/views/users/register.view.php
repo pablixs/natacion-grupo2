@@ -26,6 +26,10 @@
                                     <input type="password" name="password" class="form-control"
                                         placeholder="Mín. 6 caracteres" required>
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Foto de Perfil</label>
+                                    <input type="file" name="profile_image" class="form-control" accept="image/*">
+                                </div>
                             </div>
 
                             <div class="col-md-6">
@@ -39,9 +43,11 @@
                                     <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Foto de Perfil</label>
-                                    <input type="file" name="profile_image" class="form-control" accept="image/*">
+                                    <label class="form-label">Repetir contraseña</label>
+                                    <input type="password" name="passwordrepeat" class="form-control"
+                                        placeholder="Mín. 6 caracteres" required>
                                 </div>
+                                
                             </div>
                         </div>
 

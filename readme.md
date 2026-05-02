@@ -6,7 +6,7 @@
 El objetivo de este trabajo consiste en extender el núcleo del proyecto desarrollado en clase, incorporando nuevas funcionalidades y corrigiendo detalles técnicos pendientes. Se busca aplicar buenas prácticas de desarrollo, arquitectura **MVC** y modularización en **JavaScript**.
 ##  Implementaciones: 
 
-*  ⌛ Campo obligatorio "Confirmar Contraseña" con validación de coincidencia.
+*  ✅ Campo obligatorio "Confirmar Contraseña" con validación de coincidencia.
 *  ⌛ Campo "Fecha de Nacimiento" (`birth_date`).
 *  ⌛ Implementación de **Landing Page** institucional del club.
 
