@@ -9,54 +9,53 @@
                 </div>
                 <div class="card-body">
                     <form id="formRegister" action="?url=register" method="POST" enctype="multipart/form-data">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Nombre</label>
-                                    <input type="text" name="nombre" class="form-control" placeholder="Ej: Juan"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Correo Electrónico</label>
-                                    <input type="email" name="email" class="form-control" placeholder="juan@correo.com"
-                                        required>
-                                </div>
-                               
-                                <div class="mb-3">
-                                    <label class="form-label">Contraseña</label>
-                                    <input type="password" name="password" class="form-control"
-                                        placeholder="Mín. 6 caracteres" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Foto de Perfil</label>
-                                    <input type="file" name="profile_image" class="form-control" accept="image/*">
-                                </div>
-
-                                
+                        <div class="row row-cols-1 row-cols-md-2">
+                            <div class="col mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" name="nombre" class="form-control" placeholder="Ej: Juan"
+                                    required>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Apellido</label>
-                                    <input type="text" name="apellido" class="form-control" placeholder="Ej: Pérez"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Teléfono</label>
-                                    <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Repetir contraseña</label>
-                                    <input type="password" name="passwordrepeat" class="form-control"
-                                        placeholder="Mín. 6 caracteres" required>
-                                </div>
-                                 <div class="mb-3">
-                                    <label class="form-label">Fecha de nacimiento</label>
-                                    <input type="date" name="birth_date" class="form-control"
-                                        required>
-                                </div>
-                                
+                            <div class="col mb-3">
+                                <label class="form-label">Apellido</label>
+                                <input type="text" name="apellido" class="form-control" placeholder="Ej: Pérez"
+                                    required>
                             </div>
+
+                              <div class="col mb-3">
+                                <label class="form-label">Correo Electrónico</label>
+                                <input type="email" name="email" class="form-control" placeholder="juan@correo.com"
+                                    required>
+                            </div>
+                            
+                             <div class="col mb-3">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678" required>
+                            </div>                        
+                          
+                            <div class="col mb-3">
+                                <label class="form-label">Contraseña</label>
+                                <input type="password" name="password" class="form-control"
+                                    placeholder="Mín. 6 caracteres" required>
+                            </div>
+
+                            <div class="col mb-3">
+                                <label class="form-label">Repetir contraseña</label>
+                                <input type="password" name="passwordrepeat" class="form-control"
+                                    placeholder="Mín. 6 caracteres" required>
+                            </div>
+
+                            <div class="col mb-3">
+                                <label class="form-label">Fecha de nacimiento</label>
+                                <input type="date" name="birth_date" class="form-control"
+                                    required>
+                            </div>
+
+                            <div class="col mb-3">
+                                <label class="form-label">Foto de Perfil</label>
+                                <input type="file" name="profile_image" class="form-control" accept="image/*">
+                            </div>                    
+                                
                         </div>
 
                         <div class="row mt-3">
