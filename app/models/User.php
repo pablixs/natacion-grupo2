@@ -94,6 +94,16 @@ class User {
         }
     }
 
+    public function getUsersCount(){
+        $sql = "SELECT COUNT(DISTINCT u.id) as alumnos FROM users u";
+
+        $stmt = $this->db->query($sql);
+
+        $usersCount = $stmt->fetchColumn();
+
+        return $usersCount;
+    }
+
     /**
     * Valida si un token existe y no ha expirado.
     */

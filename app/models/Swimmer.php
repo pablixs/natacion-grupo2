@@ -42,4 +42,16 @@ class Swimmer {
             $data['profile_image'] ?? 'default-profile.png' 
         ]);
     }
+
+    public function getSwimmersCount(){
+        $sql = "SELECT COUNT(s.user_id) as alumnos FROM swimmers s WHERE deleted_at IS NULL";
+
+        $stmt = $this->db->query($sql);
+
+        $swimmersCount = $stmt->fetchColumn();
+
+        return $swimmersCount;
+    }
+
+    
 }
