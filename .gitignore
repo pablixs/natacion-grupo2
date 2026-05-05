@@ -1,0 +1,17 @@
+.env
+.htaccess
+.gitignore
+
+/vendor/
+
+.DS_Store
+Thumbs.db
+
+error_log
+*.log
+storage/*.log
+
+public/js/modules/auth/uploads/profiles/swimmers/*
+public/js/modules/auth/uploads/profiles/swimmers/
+
+!public/js/modules/auth/uploads/profiles/swimmers/default-profile.png
