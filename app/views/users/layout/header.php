@@ -24,6 +24,11 @@
 
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto align-items-center">
+                    <?php if(isset($_SESSION['role_id'])): ?>
+                        <li class="nav-item">
+                        <a class="nav-link btn" href="?url=coaches">Profesores</a>
+                    </li>
+                    <?php endif; ?>
                     <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item d-flex align-items-center">
                         <?php 
