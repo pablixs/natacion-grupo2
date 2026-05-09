@@ -158,10 +158,10 @@ class UserController extends BaseController {
             $this->pdo->beginTransaction();
 
             // Tabla: users
-            $userId = $this->userModel->create( [
+            $userId = $this->userModel->createUser( [
                 'email'    => $f[ 'email' ],
                 'password' => $f[ 'password' ],
-                'role_id'  => 3, // Rol Swimmer
+                'role_id'  => 3 // Rol Swimmer
             ] );
 
             if ( !$userId ) throw new Exception( 'Error al crear credenciales.' );

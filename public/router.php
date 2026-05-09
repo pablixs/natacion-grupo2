@@ -58,9 +58,14 @@ switch ( $route ) {
     break;
 
     case 'coaches':
+    case 'register-coach': // Vista del form de registro 
+    case 'create-coach': // POST para la creacion del couch
         require_once __DIR__ . '/../app/controllers/AdminController.php';
         $controller = new AdminController();
+        
         if($route === 'coaches') $controller->index();
+        if($route === 'register-coach') $controller->registerCoach(); // Renderiza la vista del form para registrar un coach
+        if($route === 'create-coach') $controller->register();  // POST para crear el coach
     break;
     // --- SEGURIDAD: CIERRE DE SESIÓN ---
     case 'logout':

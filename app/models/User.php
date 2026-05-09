@@ -27,7 +27,7 @@ class User {
     * @param array $data [ 'email' => string, 'password' => string, 'role_id' => int ]
     */
 
-    public function create( array $data ) {
+    public function createUser( array $data ) {
         $hash = password_hash( $data[ 'password' ], PASSWORD_BCRYPT );
         // Usamos el role_id del array, o 3 ( Swimmer ) por defecto si no viene
         $roleId = $data[ 'role_id' ] ?? 3;

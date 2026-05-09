@@ -7,14 +7,30 @@ class Coach {
         $this->db = $pdo;
     }
 
-    public function getAllCoachs(){
-        $sql = "SELECT cantidad = count(distinct u.id), s.*, u.email
-                FROM coaches c 
-                INNER JOIN users u ON c.user_id = u.id 
-                WHERE c.deleted_at IS NULL";
-        
+    public function getCoachesCount(){
+        $sql = "SELECT COUNT(c.user_id) as coaches FROM coaches c WHERE deleted_at IS NULL";
+
         $stmt = $this->db->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $coachesCount = $stmt->fetchColumn();
+
+        return $coachesCount;
+    }
+
+     public function createCoach(array $data) {
+        $sql = "INSERT INTO coaches (user_id, first_name, last_name, phone, specialty) 
+                VALUES (?, ?, ?, ?, ?)";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        return $stmt->execute([
+            $data['user_id'],
+            $data['first_name'],
+            $data['last_name'],
+            $data['phone'],
+            $data['specialty'],
+
+        ]);
     }
 }
 

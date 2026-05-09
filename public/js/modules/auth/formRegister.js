@@ -9,10 +9,8 @@ export function initRegister() {
   const form = document.getElementById("formRegister");
 
   if (!form) return;
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     /**
      * Capturamos el archivo de imagen para validarlo antes de enviarlo.
      * Es una buena práctica para ahorrar ancho de banda y no saturar el servidor
@@ -92,3 +90,5 @@ export function initRegister() {
     }
   });
 }
+
+

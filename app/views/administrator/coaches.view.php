@@ -1,19 +1,25 @@
-<?php 
-include __DIR__ . '/../users/layout/header.php'; 
+<?php
+include __DIR__ . '/../users/layout/header.php';
 /* Se declara la variable y el tipo para que intelephense no marque error de variable no definida */
+/** @var int $coachs_data */
 ?>
 
 <div class="bg-white p-5 rounded shadow-sm">
     <div class="row">
+        <div class="my-2">
+            <a href="?url=register-coach" class="btn btn-primary">Dar de alta profesor</a>
+        </div>
+
         <div class="col-md-4">
             <div class="card text-white bg-primary mb-3">
+
                 <div class="card-body">
-                    <h5 class="card-title">Coaches</h5>
-                    <p class="card-text fs-2"></p>
+                    <h5 class="card-title">Profesores activos</h5>
+                    <p class="card-text fs-2"><?= $coachs_data ?></p>
                 </div>
             </div>
         </div>
-        
+
     </div>
 </div>
 
