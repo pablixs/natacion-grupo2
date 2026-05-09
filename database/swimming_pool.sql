@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 03, 2026 at 12:27 AM
+-- Generation Time: May 09, 2026 at 04:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -52,6 +52,14 @@ CREATE TABLE `coaches` (
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `coaches`
+--
+
+INSERT INTO `coaches` (`id`, `user_id`, `first_name`, `last_name`, `phone`, `specialty`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(9, 30, 'Pablo', 'Perez', '1239482', 'espalda', '2026-05-09 02:01:29', '2026-05-09 02:01:29', NULL),
+(10, 31, 'Testing', 'Profe', '1189849392', 'espalda', '2026-05-09 02:33:15', '2026-05-09 02:33:15', NULL);
 
 -- --------------------------------------------------------
 
@@ -128,7 +136,9 @@ CREATE TABLE `swimmers` (
 --
 
 INSERT INTO `swimmers` (`id`, `user_id`, `first_name`, `last_name`, `birth_date`, `phone`, `profile_image`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(4, 4, 'Juan Pablo', 'Pompin', NULL, '1111111', 'swimmer_jpompin_5590.jpeg', '2026-03-15 13:17:04', '2026-03-15 13:17:04', NULL);
+(4, 4, 'Juan Pablo', 'Pompin', NULL, '1111111', 'swimmer_jpompin_5590.jpeg', '2026-03-15 13:17:04', '2026-03-15 13:17:04', NULL),
+(12, 13, 'Pablo', 'Gomez', '2003-08-17', '1167455716', 'default-profile.png', '2026-05-02 22:42:44', '2026-05-02 22:42:44', NULL),
+(14, 14, 'Pablingui', 'Gomez', '1999-08-17', '1199887766', 'default-profile.png', '2026-05-03 00:16:43', '2026-05-03 00:16:43', NULL);
 
 -- --------------------------------------------------------
 
@@ -151,7 +161,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `role_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(4, 'juanpcesarini@hotmail.com', '$2y$10$X1w2LzRGHtDI.wjtnlFmzehdKQrg6kkI.VppvOW3o3Sjz6XdGQmaq', 3, '2026-03-15 13:17:04', '2026-03-15 13:17:55', NULL);
+(4, 'juanpcesarini@hotmail.com', '$2y$10$X1w2LzRGHtDI.wjtnlFmzehdKQrg6kkI.VppvOW3o3Sjz6XdGQmaq', 3, '2026-03-15 13:17:04', '2026-03-15 13:17:55', NULL),
+(13, 'pablicjs@gmail.com', '$2y$10$TWYrv0PEZxbVEkUIjbc0uevL0d5mCmnS3rvqGBLZEWcSxB5hxicWG', 1, '2026-05-02 22:42:44', '2026-05-02 22:43:14', NULL),
+(14, 'prueba@test.com', '$2y$10$YhSFEjUVHj6uBBHxa3tJsOHIfRFtnbxprlvGJlSOJbv1Y8dolBAiK', 3, '2026-05-03 00:16:43', '2026-05-03 00:16:43', NULL),
+(30, 'pabloprofe@gmail.com', '$2y$10$8XN6ARLxTXwKvwkdrPDzW.dfTcfu.80U/3pTEe2m053gHYXK322FG', 2, '2026-05-09 02:01:29', '2026-05-09 02:01:29', NULL),
+(31, 'profe@test.com', '$2y$10$/qcWSqNetyxN7wIWEFcSqOSejarvrsQSPd/BU3cpcl9oBpM9ZCRSW', 2, '2026-05-09 02:33:15', '2026-05-09 02:33:15', NULL);
 
 --
 -- Indexes for dumped tables
@@ -222,7 +236,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `coaches`
 --
 ALTER TABLE `coaches`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `lessons`
@@ -246,13 +260,13 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `swimmers`
 --
 ALTER TABLE `swimmers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- Constraints for dumped tables
