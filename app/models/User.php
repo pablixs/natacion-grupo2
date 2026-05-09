@@ -27,14 +27,14 @@ class User {
     * @param array $data [ 'email' => string, 'password' => string, 'role_id' => int ]
     */
 
-    public function create( array $data ) {
+    public function createUser( array $data ) {
         $hash = password_hash( $data[ 'password' ], PASSWORD_BCRYPT );
         // Usamos el role_id del array, o 3 ( Swimmer ) por defecto si no viene
         $roleId = $data[ 'role_id' ] ?? 3;
 
         $stmt = $this->db->prepare( 'INSERT INTO users (email, password, role_id) VALUES (?, ?, ?)' );
 
-        if ( $stmt->execute( [ $data[ 'email' ], $hash, $roleId ] ) ) {
+        if ( $stmt->execute( [ $data[ 'email' ], $hash,$roleId ] ) ) {
             return $this->db->lastInsertId();
         }
         return false;
@@ -92,6 +92,16 @@ class User {
             error_log( 'Error en savePasswordToken: ' . $e->getMessage() );
             return false;
         }
+    }
+
+    public function getUsersCount(){
+        $sql = "SELECT COUNT(DISTINCT u.id) as alumnos FROM users u";
+
+        $stmt = $this->db->query($sql);
+
+        $usersCount = $stmt->fetchColumn();
+
+        return $usersCount;
     }
 
     /**

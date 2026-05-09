@@ -27,8 +27,8 @@ class Swimmer {
      */
     public function create(array $data) {
         // Agregamos profile_image al INSERT
-        $sql = "INSERT INTO swimmers (user_id, first_name, last_name, phone, profile_image) 
-                VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO swimmers (user_id, first_name, last_name, birth_date, phone, profile_image) 
+                VALUES (?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->db->prepare($sql);
         
@@ -36,9 +36,22 @@ class Swimmer {
             $data['user_id'],
             $data['first_name'],
             $data['last_name'],
+            $data['birth_date'],
             $data['phone'],
             // Si no viene imagen, podemos pasar un null o el nombre por defecto
             $data['profile_image'] ?? 'default-profile.png' 
         ]);
     }
+
+    public function getSwimmersCount(){
+        $sql = "SELECT COUNT(s.user_id) as alumnos FROM swimmers s WHERE deleted_at IS NULL";
+
+        $stmt = $this->db->query($sql);
+
+        $swimmersCount = $stmt->fetchColumn();
+
+        return $swimmersCount;
+    }
+
+    
 }

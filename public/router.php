@@ -41,22 +41,32 @@ switch ( $route ) {
     case 'send-reset':
     case 'reset-password':
     case 'update-password':
-    require_once __DIR__ . '/../app/controllers/UserController.php';
-    $controller = new UserController();
+        require_once __DIR__ . '/../app/controllers/UserController.php';
+        $controller = new UserController();
 
-    /**
-    * Ejecución del método según la acción solicitada.
-    * Separamos la visualización ( GET ) de la lógica de procesamiento ( POST ).
-    */
-    if ( $route === 'login' )           $controller->showLogin();
-    if ( $route === 'authenticate' )    $controller->authenticate();
-    if ( $route === 'register' )        $controller->register();
-    if ( $route === 'forgot-password' ) $controller->forgotPassword();
-    if ( $route === 'send-reset' )      $controller->sendReset();
-    if ( $route === 'reset-password' )  $controller->showResetForm();
-    if ( $route === 'update-password' ) $controller->updatePassword();
+        /**
+        * Ejecución del método según la acción solicitada.
+        * Separamos la visualización ( GET ) de la lógica de procesamiento ( POST ).
+        */
+        if ( $route === 'login' )           $controller->showLogin();
+        if ( $route === 'authenticate' )    $controller->authenticate();
+        if ( $route === 'register' )        $controller->register();
+        if ( $route === 'forgot-password' ) $controller->forgotPassword();
+        if ( $route === 'send-reset' )      $controller->sendReset();
+        if ( $route === 'reset-password' )  $controller->showResetForm();
+        if ( $route === 'update-password' ) $controller->updatePassword();
     break;
 
+    case 'coaches':
+    case 'register-coach': // Vista del form de registro 
+    case 'create-coach': // POST para la creacion del couch
+        require_once __DIR__ . '/../app/controllers/AdminController.php';
+        $controller = new AdminController();
+        
+        if($route === 'coaches') $controller->index();
+        if($route === 'register-coach') $controller->registerCoach(); // Renderiza la vista del form para registrar un coach
+        if($route === 'create-coach') $controller->register();  // POST para crear el coach
+    break;
     // --- SEGURIDAD: CIERRE DE SESIÓN ---
     case 'logout':
     /**

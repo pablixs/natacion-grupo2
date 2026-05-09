@@ -1,5 +1,6 @@
 # Entorno y Secretos
 .env
+.htaccess
 
 # Dependencias (si usaran Composer más adelante)
 /vendor/
@@ -15,6 +16,7 @@ storage/*.log
 
 # Ignorar todas las fotos de nadadores subidas
 public/js/modules/auth/uploads/profiles/swimmers/*
+public/js/modules/auth/uploads/profiles/swimmers/
 
 # Excepciones: NO ignorar el archivo por defecto
 !public/js/modules/auth/uploads/profiles/swimmers/default-profile.png
