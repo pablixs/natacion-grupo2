@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: May 09, 2026 at 04:41 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 16-05-2026 a las 01:36:29
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `swimming_pool_g2`
+-- Base de datos: `swimming_pool_g2`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bookings`
+-- Estructura de tabla para la tabla `bookings`
 --
 
 CREATE TABLE `bookings` (
@@ -38,7 +38,7 @@ CREATE TABLE `bookings` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `coaches`
+-- Estructura de tabla para la tabla `coaches`
 --
 
 CREATE TABLE `coaches` (
@@ -54,7 +54,7 @@ CREATE TABLE `coaches` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `coaches`
+-- Volcado de datos para la tabla `coaches`
 --
 
 INSERT INTO `coaches` (`id`, `user_id`, `first_name`, `last_name`, `phone`, `specialty`, `created_at`, `updated_at`, `deleted_at`) VALUES
@@ -64,7 +64,7 @@ INSERT INTO `coaches` (`id`, `user_id`, `first_name`, `last_name`, `phone`, `spe
 -- --------------------------------------------------------
 
 --
--- Table structure for table `lessons`
+-- Estructura de tabla para la tabla `lessons`
 --
 
 CREATE TABLE `lessons` (
@@ -81,7 +81,7 @@ CREATE TABLE `lessons` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `password_resets`
+-- Estructura de tabla para la tabla `password_resets`
 --
 
 CREATE TABLE `password_resets` (
@@ -95,7 +95,27 @@ CREATE TABLE `password_resets` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `roles`
+-- Estructura de tabla para la tabla `profiles`
+--
+
+CREATE TABLE `profiles` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `first_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `specialty` varchar(100) DEFAULT NULL,
+  `birth_date` date DEFAULT NULL,
+  `profile_image` varchar(255) DEFAULT 'default-profile.png',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `roles`
 --
 
 CREATE TABLE `roles` (
@@ -104,7 +124,7 @@ CREATE TABLE `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `roles`
+-- Volcado de datos para la tabla `roles`
 --
 
 INSERT INTO `roles` (`id`, `role_name`) VALUES
@@ -115,7 +135,7 @@ INSERT INTO `roles` (`id`, `role_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `swimmers`
+-- Estructura de tabla para la tabla `swimmers`
 --
 
 CREATE TABLE `swimmers` (
@@ -132,7 +152,7 @@ CREATE TABLE `swimmers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `swimmers`
+-- Volcado de datos para la tabla `swimmers`
 --
 
 INSERT INTO `swimmers` (`id`, `user_id`, `first_name`, `last_name`, `birth_date`, `phone`, `profile_image`, `created_at`, `updated_at`, `deleted_at`) VALUES
@@ -143,7 +163,7 @@ INSERT INTO `swimmers` (`id`, `user_id`, `first_name`, `last_name`, `birth_date`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Estructura de tabla para la tabla `users`
 --
 
 CREATE TABLE `users` (
@@ -157,7 +177,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `users`
+-- Volcado de datos para la tabla `users`
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `role_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
@@ -168,11 +188,11 @@ INSERT INTO `users` (`id`, `email`, `password`, `role_id`, `created_at`, `update
 (31, 'profe@test.com', '$2y$10$/qcWSqNetyxN7wIWEFcSqOSejarvrsQSPd/BU3cpcl9oBpM9ZCRSW', 2, '2026-05-09 02:33:15', '2026-05-09 02:33:15', NULL);
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `bookings`
+-- Indices de la tabla `bookings`
 --
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`),
@@ -180,21 +200,21 @@ ALTER TABLE `bookings`
   ADD KEY `fk_booking_lesson` (`lesson_id`);
 
 --
--- Indexes for table `coaches`
+-- Indices de la tabla `coaches`
 --
 ALTER TABLE `coaches`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_coach_user` (`user_id`);
 
 --
--- Indexes for table `lessons`
+-- Indices de la tabla `lessons`
 --
 ALTER TABLE `lessons`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_lesson_coach` (`coach_id`);
 
 --
--- Indexes for table `password_resets`
+-- Indices de la tabla `password_resets`
 --
 ALTER TABLE `password_resets`
   ADD PRIMARY KEY (`id`),
@@ -202,20 +222,27 @@ ALTER TABLE `password_resets`
   ADD KEY `token` (`token`);
 
 --
--- Indexes for table `roles`
+-- Indices de la tabla `profiles`
+--
+ALTER TABLE `profiles`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_profile_user` (`user_id`);
+
+--
+-- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `swimmers`
+-- Indices de la tabla `swimmers`
 --
 ALTER TABLE `swimmers`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_swimmer_user` (`user_id`);
 
 --
--- Indexes for table `users`
+-- Indices de la tabla `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -223,82 +250,94 @@ ALTER TABLE `users`
   ADD KEY `fk_user_role` (`role_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `bookings`
+-- AUTO_INCREMENT de la tabla `bookings`
 --
 ALTER TABLE `bookings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `coaches`
+-- AUTO_INCREMENT de la tabla `coaches`
 --
 ALTER TABLE `coaches`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `lessons`
+-- AUTO_INCREMENT de la tabla `lessons`
 --
 ALTER TABLE `lessons`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `password_resets`
+-- AUTO_INCREMENT de la tabla `password_resets`
 --
 ALTER TABLE `password_resets`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `roles`
+-- AUTO_INCREMENT de la tabla `profiles`
+--
+ALTER TABLE `profiles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `swimmers`
+-- AUTO_INCREMENT de la tabla `swimmers`
 --
 ALTER TABLE `swimmers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
--- Constraints for dumped tables
+-- Restricciones para tablas volcadas
 --
 
 --
--- Constraints for table `bookings`
+-- Filtros para la tabla `bookings`
 --
 ALTER TABLE `bookings`
   ADD CONSTRAINT `fk_booking_lesson` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`),
   ADD CONSTRAINT `fk_booking_swimmer` FOREIGN KEY (`swimmer_id`) REFERENCES `swimmers` (`id`);
 
 --
--- Constraints for table `coaches`
+-- Filtros para la tabla `coaches`
 --
 ALTER TABLE `coaches`
   ADD CONSTRAINT `fk_coach_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `lessons`
+-- Filtros para la tabla `lessons`
 --
 ALTER TABLE `lessons`
   ADD CONSTRAINT `fk_lesson_coach` FOREIGN KEY (`coach_id`) REFERENCES `coaches` (`id`);
 
 --
--- Constraints for table `swimmers`
+-- Filtros para la tabla `profiles`
+--
+ALTER TABLE `profiles`
+  ADD CONSTRAINT `fk_profile_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `swimmers`
 --
 ALTER TABLE `swimmers`
   ADD CONSTRAINT `fk_swimmer_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `users`
+-- Filtros para la tabla `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
