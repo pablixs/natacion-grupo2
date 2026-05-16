@@ -13,7 +13,7 @@ class Swimmer {
     public function getAll() {
         // Agregamos s.profile_image a la consulta
         $sql = "SELECT s.*, u.email 
-                FROM swimmers s 
+                FROM profiles s 
                 INNER JOIN users u ON s.user_id = u.id 
                 WHERE s.deleted_at IS NULL";
         
@@ -27,7 +27,7 @@ class Swimmer {
      */
     public function create(array $data) {
         // Agregamos profile_image al INSERT
-        $sql = "INSERT INTO swimmers (user_id, first_name, last_name, birth_date, phone, profile_image) 
+        $sql = "INSERT INTO profiles (user_id, first_name, last_name, birth_date, phone, profile_image) 
                 VALUES (?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->db->prepare($sql);
@@ -44,7 +44,7 @@ class Swimmer {
     }
 
     public function getSwimmersCount(){
-        $sql = "SELECT COUNT(s.user_id) as alumnos FROM swimmers s WHERE deleted_at IS NULL";
+        $sql = "SELECT COUNT(s.user_id) as alumnos FROM profiles s WHERE deleted_at IS NULL AND s.role_id = 2";
 
         $stmt = $this->db->query($sql);
 

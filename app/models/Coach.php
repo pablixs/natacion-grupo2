@@ -8,7 +8,7 @@ class Coach {
     }
 
     public function getCoachesCount(){
-        $sql = "SELECT COUNT(c.user_id) as coaches FROM coaches c WHERE deleted_at IS NULL";
+        $sql = "SELECT COUNT(c.user_id) as coaches FROM profiles c WHERE deleted_at IS NULL";
 
         $stmt = $this->db->query($sql);
 
@@ -18,8 +18,8 @@ class Coach {
     }
 
      public function createCoach(array $data) {
-        $sql = "INSERT INTO coaches (user_id, first_name, last_name, phone, specialty) 
-                VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO profiles (user_id, first_name, last_name, phone, specialty, birth_date, profile_image) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->db->prepare($sql);
         
@@ -29,6 +29,8 @@ class Coach {
             $data['last_name'],
             $data['phone'],
             $data['specialty'],
+            $data['birth_date'],
+            $data['profile_image'],
 
         ]);
     }

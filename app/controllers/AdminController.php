@@ -34,6 +34,7 @@ class AdminController extends BaseController
         ];
 
         $data['coachs_data'] = $this->coachesModel->getCoachesCount();
+        
         $this->render('administrator/coaches.view', $data);
     }
 
@@ -93,7 +94,40 @@ class AdminController extends BaseController
             return $this->json('warning', 'La contraseña es muy corta (mín. 6 caracteres).');
         }
 
-        return $this->executeRegistration($fields);
+        $tempFile = null;
+        if ( isset( $_FILES[ 'profile_image' ] ) && $_FILES[ 'profile_image' ][ 'error' ] === UPLOAD_ERR_OK ) {
+            $uploadDir = __DIR__ . '/../../public/img/uploads/profiles/swimmers/';
+
+            if ( !is_dir( $uploadDir ) ) {
+                mkdir( $uploadDir, 0755, true );
+            }
+
+            $extension = strtolower( pathinfo( $_FILES[ 'profile_image' ][ 'name' ], PATHINFO_EXTENSION ) );
+            $allowed = [ 'jpg', 'jpeg', 'png', 'gif' ];
+
+            if ( in_array( $extension, $allowed ) ) {
+
+                // 1. Tomamos la inicial del nombre en minúscula
+                $initial = strtolower( substr( $fields[ 'first_name' ], 0, 1 ) );
+
+                // 2. Limpiamos el apellido ( quitamos espacios y pasamos a minúscula )
+                $lastName = strtolower( str_replace( ' ', '', $fields[ 'last_name' ] ) );
+
+                // 3. Generamos un número aleatorio de 4 dígitos para evitar colisiones ( Juan Perez vs Jorge Perez )
+                $randomNumber = rand( 1000, 9999 );
+
+                // Resultado ej: jperez_4521.jpg
+                $newFileName = 'swimmer_' . $initial . $lastName . '_' . $randomNumber . '.' . $extension;
+                $absolutePath = $uploadDir . $newFileName;
+
+                if ( move_uploaded_file( $_FILES[ 'profile_image' ][ 'tmp_name' ], $absolutePath ) ) {
+                    $fields[ 'profile_image' ] = $newFileName;
+                    $tempFile = $absolutePath;
+                }
+            }
+        }
+
+        return $this->executeRegistration($fields, $tempFile);
     }
 
     /**
@@ -101,12 +135,16 @@ class AdminController extends BaseController
      * Enseñamos que si algo falla en el medio, no debe quedar basura en la DB.
      */
 
-    private function executeRegistration($f)
+    private function executeRegistration($f, $tempFile = null)
     {
         $this->checkAuth(1);
 
         try {
             if ($this->userModel->findByEmail($f['email'])) {
+                if ( $tempFile && file_exists( $tempFile ) ) {
+                    unlink( $tempFile );
+
+                }
                 return $this->json('user_exists', '.', Env::get('APP_URL') . '/?url=coaches');
             }
 

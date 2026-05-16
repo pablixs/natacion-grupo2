@@ -47,6 +47,17 @@ include __DIR__ . '/../users/layout/header.php';
                                 <input type="password" name="passwordrepeat" class="form-control"
                                     placeholder="Mín. 6 caracteres" required>
                             </div>
+                            
+                            <div class="col mb-3 ">
+                                <label class="form-label">Fecha de nacimiento</label>
+                                <input type="date" name="birth_date" class="form-control"
+                                    required>
+                            </div>
+
+                             <div class="col mb-3">
+                                <label class="form-label">Foto de Perfil</label>
+                                <input type="file" name="profile_image" class="form-control" accept="image/*">
+                            </div>   
 
                             <div class="col mb-3 w-100">
                                 <label for="especialidad" class="form-label">Especialidad</label>
@@ -58,6 +69,7 @@ include __DIR__ . '/../users/layout/header.php';
                                     <option value="mariposa">Mariposa</option>
                                 </select>
                             </div>
+
 
                         </div>
 
