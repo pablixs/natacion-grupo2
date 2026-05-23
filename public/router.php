@@ -64,8 +64,8 @@ switch ( $route ) {
         $controller = new AdminController();
         
         if($route === 'coaches') $controller->index();
-        if($route === 'register-coach') $controller->registerCoach(); // Renderiza la vista del form para registrar un coach
-        if($route === 'create-coach') $controller->register();  // POST para crear el coach
+        if($route === 'register-coach') $controller->registerCoachView(); // Renderiza la vista del form para registrar un coach
+        if($route === 'create-coach') $controller->registerCoachPost();  // POST para crear el coach
     break;
     // --- SEGURIDAD: CIERRE DE SESIÓN ---
     case 'logout':

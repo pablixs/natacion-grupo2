@@ -56,9 +56,9 @@ class User {
 
     public function login( $email, $password ) {
         // Traemos los datos de users y los datos de perfil de swimmers
-        $sql = "SELECT u.*, s.first_name, s.profile_image 
+        $sql = "SELECT u.*, p.first_name, p.profile_image 
             FROM users u
-            LEFT JOIN swimmers s ON u.id = s.user_id 
+            LEFT JOIN profiles p ON u.id = p.user_id 
             WHERE u.email = ? AND u.deleted_at IS NULL 
             LIMIT 1";
 

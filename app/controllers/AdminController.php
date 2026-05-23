@@ -38,7 +38,7 @@ class AdminController extends BaseController
         $this->render('administrator/coaches.view', $data);
     }
 
-    public function registerCoach() {
+    public function registerCoachView() {
         // Solo permitimos pasar al role id 1 (admin)
         $this->checkAuth(1);
 
@@ -52,7 +52,7 @@ class AdminController extends BaseController
         $this->render('administrator/register-coach.view', $data);
     }
 
-    public function register(){
+    public function registerCoachPost(){
         $this->checkAuth(1);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->index();
