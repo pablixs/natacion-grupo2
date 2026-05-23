@@ -36,7 +36,11 @@ class AdminController extends BaseController
         $data['coachs_data'] = $this->userModel->getCountByRole(2);
         
         $this->render('administrator/coaches.view', $data);
+
+
+
     }
+
 
     public function registerCoachView() {
         // Solo permitimos pasar al role id 1 (admin)
@@ -54,81 +58,30 @@ class AdminController extends BaseController
 
     public function registerCoachPost(){
         $this->checkAuth(1);
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->index();
         }
 
         // 1. Recolección y Sanitización ( Evitamos espacios vacíos y basura )
         $fields = [
-            'first_name'    => trim($_POST['nombre'] ?? ''),
-            'last_name'     => trim($_POST['apellido'] ?? ''),
             'email'          => trim($_POST['email'] ?? ''),
-            'password'       => $_POST['password'] ?? '',
-            'passwordrepeat' => $_POST['passwordrepeat'] ?? '',
-            'phone'          => trim($_POST['telefono'] ?? ''),
-            'birth_date' => $_POST['birth_date'],
-            'role_id'         => $_POST['role_id'] ?? 2,
+            'role_id'         => 2 /* Rol: profesor */,
+            'need_change_password' => 1,
             'specialty'      => $_POST['especialidad'] ?? ''
         ];
 
 
         // 2. Validaciones Críticas ( Uso de 'Early Returns' para evitar anidación de IFs )
-        if ($this->hasEmptyFields($fields)) {
+        if ( empty ( $fields[ 'email' ] ) || empty ($fields['specialty'])) {
             return $this->json('warning', 'Faltan datos obligatorios.');
-        }
-
-        // Validando minimo y maximo de numero de telefono
-        if (strlen($fields['phone']) < 6 || strlen($fields['phone']) > 15) {
-            return $this->json('warning', 'El número de teléfono debe tener de 6 a 15 números');
-        }
-
-        // Validando contraseña repetida
-        if ($fields['password'] !== $fields['passwordrepeat']) {
-            return $this->json('warning', 'Las contraseñas no coinciden');
         }
 
         if (!filter_var($fields['email'], FILTER_VALIDATE_EMAIL)) {
             return $this->json('error', 'El email ingresado no es válido.');
         }
 
-        if (strlen($fields['password']) < 6) {
-            return $this->json('warning', 'La contraseña es muy corta (mín. 6 caracteres).');
-        }
-
-        $tempFile = null;
-        if ( isset( $_FILES[ 'profile_image' ] ) && $_FILES[ 'profile_image' ][ 'error' ] === UPLOAD_ERR_OK ) {
-            $uploadDir = __DIR__ . '/../../public/img/uploads/profiles/swimmers/';
-
-            if ( !is_dir( $uploadDir ) ) {
-                mkdir( $uploadDir, 0755, true );
-            }
-
-            $extension = strtolower( pathinfo( $_FILES[ 'profile_image' ][ 'name' ], PATHINFO_EXTENSION ) );
-            $allowed = [ 'jpg', 'jpeg', 'png', 'gif' ];
-
-            if ( in_array( $extension, $allowed ) ) {
-
-                // 1. Tomamos la inicial del nombre en minúscula
-                $initial = strtolower( substr( $fields[ 'first_name' ], 0, 1 ) );
-
-                // 2. Limpiamos el apellido ( quitamos espacios y pasamos a minúscula )
-                $lastName = strtolower( str_replace( ' ', '', $fields[ 'last_name' ] ) );
-
-                // 3. Generamos un número aleatorio de 4 dígitos para evitar colisiones ( Juan Perez vs Jorge Perez )
-                $randomNumber = rand( 1000, 9999 );
-
-                // Resultado ej: jperez_4521.jpg
-                $newFileName = 'swimmer_' . $initial . $lastName . '_' . $randomNumber . '.' . $extension;
-                $absolutePath = $uploadDir . $newFileName;
-
-                if ( move_uploaded_file( $_FILES[ 'profile_image' ][ 'tmp_name' ], $absolutePath ) ) {
-                    $fields[ 'profile_image' ] = $newFileName;
-                    $tempFile = $absolutePath;
-                }
-            }
-        }
-
-        return $this->executeRegistration($fields, $tempFile);
+        return $this->executeRegistration($fields);
     }
 
     /**
@@ -136,16 +89,12 @@ class AdminController extends BaseController
      * Enseñamos que si algo falla en el medio, no debe quedar basura en la DB.
      */
 
-    private function executeRegistration($f, $tempFile = null)
+    private function executeRegistration($f)
     {
         $this->checkAuth(1);
 
         try {
             if ($this->userModel->findByEmail($f['email'])) {
-                if ( $tempFile && file_exists( $tempFile ) ) {
-                    unlink( $tempFile );
-
-                }
                 return $this->json('user_exists', '.', Env::get('APP_URL') . '/?url=coaches');
             }
 
@@ -154,16 +103,19 @@ class AdminController extends BaseController
             // Tabla: users
             $userId = $this->userModel->createUser([
                 'email'    => $f['email'],
-                'password' => $f['password'],
-                'role_id'  => $f['role_id'] // Rol Coach
+                'password' => "adminpassword",
+                'role_id'  => $f['role_id'],
             ]);
 
             if (!$userId) throw new Exception('Error al crear credenciales.');
 
-            $f['user_id'] = $userId;
-            $this->profileModel->create($f);
 
-            $this->pdo->commit();
+            $token = bin2hex(random_bytes(16));
+
+            $this->userModel->generateRegisterToken(
+                $token,
+                $f['email']
+            );
 
             // 1. Obtenemos la URL base del .env ( ej: http://localhost/gestion-natacion )
             $baseUrl = rtrim(Env::get('APP_URL'), '/');
@@ -176,7 +128,7 @@ class AdminController extends BaseController
             // 3. Construimos la URL final
             $coachesUrl = $baseUrl . '/?url=coaches';
 
-            return $this->json('success', '¡Registro completado!', $coachesUrl);
+            return $this->json('success', '¡Registro completado! El profesor debe completar su perfil en el correo enviado', $coachesUrl);
         } catch (Exception $e) {
             if ($this->pdo->inTransaction()) $this->pdo->rollBack();
 

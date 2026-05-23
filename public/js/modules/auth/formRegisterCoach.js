@@ -7,6 +7,7 @@ import { handleAlert } from "../../services/ui.js";
 
 export function initRegisterCoach() {
     const formCoach = document.getElementById("formRegisterCoach");
+    console.log("console log antes del if: ", formCoach);
     if (!formCoach) return;
     formCoach.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -16,14 +17,16 @@ export function initRegisterCoach() {
          */
         const formData = new FormData(formCoach);
 
+        console.log("datos para el sevidor: ", formData)
         try {
+
             const response = await fetch("?url=create-coach", {
                 method: "POST",
                 body: formData,
             });
 
             const text = await response.text();
-            console.log("text antes del try: ", text);
+            console.log("aaaaaaaaaaaaaa text antes del try: ", text);
             try {
                 const data = JSON.parse(text);
                 console.log("data antes del handleAlert: ", data);

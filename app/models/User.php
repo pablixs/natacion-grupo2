@@ -14,7 +14,7 @@ class User {
     * @return array|bool Retorna los datos del usuario o false si no existe.
     */
 
-    public function findByEmail( $email ) {
+    public function findByEmail(string $email ) {
         $stmt = $this->db->prepare( 'SELECT * FROM users WHERE email = ? AND deleted_at IS NULL LIMIT 1' );
         $stmt->execute( [ $email ] );
         return $stmt->fetch( PDO::FETCH_ASSOC );
@@ -41,10 +41,17 @@ class User {
         $hash = password_hash( $data[ 'password' ], PASSWORD_BCRYPT );
         // Usamos el role_id del array, o 3 ( Swimmer ) por defecto si no viene
         $roleId = $data[ 'role_id' ] ?? 3;
+        $need_change_password = 0;
 
-        $stmt = $this->db->prepare( 'INSERT INTO users (email, password, role_id) VALUES (?, ?, ?)' );
+        // Si es un coach debe cambiar la contraseña
+        if($data[ 'role_id' ] == 2){
+            $need_change_password = 1;
+        }
 
-        if ( $stmt->execute( [ $data[ 'email' ], $hash,$roleId ] ) ) {
+        $stmt = $this->db->prepare( 'INSERT INTO users (email, password, role_id, need_change_password)
+         VALUES (?, ?, ?, ?)');
+
+        if ( $stmt->execute( [ $data[ 'email' ], $hash,$roleId, $need_change_password ] ) ) {
             return $this->db->lastInsertId();
         }
         return false;
@@ -53,6 +60,17 @@ class User {
     /**
     * Valida las credenciales en el inicio de sesión.
     */
+
+    public function generateRegisterToken(string $token, string $email){
+        $sql = "INSERT INTO password_resets
+                (email, token, expires_at)
+                VALUES (?,?, ?)
+        ";
+
+        $stmt = $this->db->prepare( $sql );
+        return $stmt->execute( [ $token, $email, '2026-05-23 00:00:00.000' ] );
+
+    }
 
     public function login( $email, $password ) {
         // Traemos los datos de users y los datos de perfil de swimmers

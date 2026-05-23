@@ -30,7 +30,7 @@ class HomeController extends BaseController {
     public function index() {
         // Verificamos si el usuario está logueado antes de mostrar el panel
         $this->checkAuth();
-
+        
         $data = [
             'title' => "Dashboard - Swimming School",
             'user'  => $_SESSION['email'] ?? 'Guest',
