@@ -1,13 +1,13 @@
 <?php
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../models/Coach.php';
+require_once __DIR__ . '/../models/Profile.php';
 
 class AdminController extends BaseController
 {
     private $pdo;
     private $userModel;
-    private $coachesModel;
+    private $profileModel;
 
     public function __construct()
     {
@@ -18,7 +18,7 @@ class AdminController extends BaseController
         global $pdo;
         $this->pdo = $pdo;
         $this->userModel = new User($pdo);
-        $this->coachesModel = new Coach($pdo);
+        $this->profileModel = new Profile($pdo);
     }
 
     public function index()
@@ -33,7 +33,7 @@ class AdminController extends BaseController
             'role_id' => $_SESSION['role_id'] ?? 3
         ];
 
-        $data['coachs_data'] = $this->coachesModel->getCoachesCount();
+        $data['coachs_data'] = $this->userModel->getCountByRole(2);
         
         $this->render('administrator/coaches.view', $data);
     }
@@ -66,6 +66,7 @@ class AdminController extends BaseController
             'password'       => $_POST['password'] ?? '',
             'passwordrepeat' => $_POST['passwordrepeat'] ?? '',
             'phone'          => trim($_POST['telefono'] ?? ''),
+            'birth_date' => $_POST['birth_date'],
             'role_id'         => $_POST['role_id'] ?? 2,
             'specialty'      => $_POST['especialidad'] ?? ''
         ];
@@ -160,7 +161,7 @@ class AdminController extends BaseController
             if (!$userId) throw new Exception('Error al crear credenciales.');
 
             $f['user_id'] = $userId;
-            $this->coachesModel->createCoach($f);
+            $this->profileModel->create($f);
 
             $this->pdo->commit();
 

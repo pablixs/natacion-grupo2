@@ -20,6 +20,16 @@ class User {
         return $stmt->fetch( PDO::FETCH_ASSOC );
     }
 
+    public function getCountByRole(int $role_id){
+        $sql = "SELECT COUNT(u.id) as total FROM users u WHERE deleted_at IS NULL AND u.role_id = $role_id";
+
+        $stmt = $this->db->query($sql);
+
+        $swimmersCount = $stmt->fetchColumn();
+
+        return $swimmersCount;
+    }
+
     // --- SECCIÓN: GESTIÓN DE CUENTA ---
 
     /**
