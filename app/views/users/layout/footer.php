@@ -8,7 +8,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script type="module" src="<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/authMain.js"></script>
+<script type="module" src="<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/Main.js"></script>
 </body>
 
 </html>

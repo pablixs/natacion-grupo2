@@ -22,19 +22,6 @@ include __DIR__ . '/../users/layout/header.php';
                                 <input type="email" name="email" class="form-control" placeholder="juan@correo.com"
                                     required>
                             </div>
-
-                            <div class="col mb-3 w-100">
-                                <label for="especialidad" class="form-label">Especialidad</label>
-                                <select class="form-select" aria-label="Selecciona una especialidad" name="especialidad">
-                                    <option selected disabled>Selecciona una opción </option>
-                                    <option value="libre">Libre</option>
-                                    <option value="pecho">Pecho</option>
-                                    <option value="espalda">Espalda</option>
-                                    <option value="mariposa">Mariposa</option>
-                                </select>
-                            </div>
-
-
                         </div>
 
                         <div class="row mt-3">

@@ -161,7 +161,8 @@ class UserController extends BaseController {
             $userId = $this->userModel->createUser( [
                 'email'    => $f[ 'email' ],
                 'password' => $f[ 'password' ],
-                'role_id'  => 3 // Rol Swimmer
+                'role_id'  => 3, // Rol Swimmer
+                'profile_created' => 1
             ] );
 
             if ( !$userId ) throw new Exception( 'Error al crear credenciales.' );
@@ -224,6 +225,9 @@ class UserController extends BaseController {
 
         return $this->json( 'error', 'Credenciales incorrectas.' );
     }
+
+    
+
 
     // --- SECCIÓN: RECUPERACIÓN DE CONTRASEÑA ---
 

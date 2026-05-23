@@ -6,7 +6,7 @@ require_once __DIR__ . '/../models/Profile.php';
 class AdminController extends BaseController
 {
     private $pdo;
-    private $userModel;
+    private User $userModel;
     private $profileModel;
 
     public function __construct()
@@ -34,15 +34,13 @@ class AdminController extends BaseController
         ];
 
         $data['coachs_data'] = $this->userModel->getCountByRole(2);
-        
+
         $this->render('administrator/coaches.view', $data);
-
-
-
     }
 
 
-    public function registerCoachView() {
+    public function registerCoachView()
+    {
         // Solo permitimos pasar al role id 1 (admin)
         $this->checkAuth(1);
 
@@ -56,7 +54,8 @@ class AdminController extends BaseController
         $this->render('administrator/register-coach.view', $data);
     }
 
-    public function registerCoachPost(){
+    public function registerCoachPost()
+    {
         $this->checkAuth(1);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -68,12 +67,11 @@ class AdminController extends BaseController
             'email'          => trim($_POST['email'] ?? ''),
             'role_id'         => 2 /* Rol: profesor */,
             'need_change_password' => 1,
-            'specialty'      => $_POST['especialidad'] ?? ''
         ];
 
 
         // 2. Validaciones Críticas ( Uso de 'Early Returns' para evitar anidación de IFs )
-        if ( empty ( $fields[ 'email' ] ) || empty ($fields['specialty'])) {
+        if (empty($fields['email'])) {
             return $this->json('warning', 'Faltan datos obligatorios.');
         }
 
@@ -89,7 +87,7 @@ class AdminController extends BaseController
      * Enseñamos que si algo falla en el medio, no debe quedar basura en la DB.
      */
 
-    private function executeRegistration($f)
+    private function executeRegistration(array $f)
     {
         $this->checkAuth(1);
 
@@ -100,22 +98,34 @@ class AdminController extends BaseController
 
             $this->pdo->beginTransaction();
 
+            $email = $f['email'];
+
             // Tabla: users
             $userId = $this->userModel->createUser([
-                'email'    => $f['email'],
+                'email'    => $email,
                 'password' => "adminpassword",
                 'role_id'  => $f['role_id'],
+                'profile_created' => 0
             ]);
 
             if (!$userId) throw new Exception('Error al crear credenciales.');
 
 
             $token = bin2hex(random_bytes(16));
+            $today_date = date("Y-m-d");
+            $expires_at_DateTime = new DateTime($today_date);
+            $expires_at = $expires_at_DateTime->modify("+3 days")->format("Y-m-d");
 
             $this->userModel->generateRegisterToken(
+                $userId,
+                $f['email'],
                 $token,
-                $f['email']
+                $expires_at
             );
+
+            $this->sendCompleteRegister($email, $token);
+
+            $this->pdo->commit();
 
             // 1. Obtenemos la URL base del .env ( ej: http://localhost/gestion-natacion )
             $baseUrl = rtrim(Env::get('APP_URL'), '/');
@@ -128,7 +138,9 @@ class AdminController extends BaseController
             // 3. Construimos la URL final
             $coachesUrl = $baseUrl . '/?url=coaches';
 
-            return $this->json('success', '¡Registro completado! El profesor debe completar su perfil en el correo enviado', $coachesUrl);
+
+
+            return $this->json('success', implode(",", $f) . " userid: " . $userId, $coachesUrl);
         } catch (Exception $e) {
             if ($this->pdo->inTransaction()) $this->pdo->rollBack();
 
@@ -136,7 +148,35 @@ class AdminController extends BaseController
         }
     }
 
-    private function hasEmptyFields( $f ) {
-        return empty( $f[ 'first_name' ] ) || empty( $f[ 'last_name' ] ) || empty( $f[ 'email' ] ) || empty( $f[ 'password' ] || empty ($f['phone'] || empty ($f['specialty']) ));
+    private function hasEmptyFields(array $f)
+    {
+        return empty($f['first_name']) || empty($f['last_name']) || empty($f['email']) || empty($f['password'] || empty($f['phone'] || empty($f['specialty'])));
+    }
+
+    public function testSendEmail(string $email)
+    {
+        try {
+
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                return $this->index();
+            }
+            
+            require_once __DIR__ . '/../services/MailService.php';
+            $mailService = new MailService();
+
+            $enviado = $mailService->sendEmailCompleteProfile($email, $token = 'dou');
+
+            return $this->json('success', 'Piolita', $enviado);
+        } catch (Exception $e) {
+            return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
+        }
+    }
+
+    private function sendCompleteRegister(string $email, string $token)
+    {
+        require_once __DIR__ . '/../services/MailService.php';
+        $mailService = new MailService();
+
+        return $enviado = $mailService->sendEmailCompleteProfile($email, $token);
     }
 }
