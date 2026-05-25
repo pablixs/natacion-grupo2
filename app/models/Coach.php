@@ -3,37 +3,29 @@
 class Coach {
     private $db;
 
-    public function __construct($pdo) {
+    public function __construct( $pdo ) {
         $this->db = $pdo;
     }
 
-    public function getCoachesCount(){
-        $sql = "SELECT COUNT(c.user_id) as coaches FROM profiles c WHERE deleted_at IS NULL";
+    // --- SECCIÓN: BÚSQUEDA E IDENTIFICACIÓN ---
 
-        $stmt = $this->db->query($sql);
+    /**
+    * Busca un usuario por email.
+    * @return array|bool Retorna los datos del usuario o false si no existe.
+    */
 
-        $coachesCount = $stmt->fetchColumn();
-
-        return $coachesCount;
+    
+    public function validateToken(string $token ) {
+        $stmt = $this->db->prepare( 'SELECT 1 FROM password_resets WHERE token = ? AND expires_at > NOW() LIMIT 1' );
+        $stmt->execute([$token]);
+        return $stmt->fetch( PDO::FETCH_ASSOC );
     }
 
-     public function createCoach(array $data) {
-        $sql = "INSERT INTO profiles (user_id, first_name, last_name, phone, specialty, birth_date, profile_image) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
-        $stmt = $this->db->prepare($sql);
-        
-        return $stmt->execute([
-            $data['user_id'],
-            $data['first_name'],
-            $data['last_name'],
-            $data['phone'],
-            $data['specialty'],
-            $data['birth_date'],
-            $data['profile_image'],
 
-        ]);
+    public function updatePasswordWhenSaveProfile(string $hashedNewPassword, int $user_id){
+        $stmt = $this->db->prepare( 'UPDATE users SET password = ? WHERE id = ?' );
+        return $stmt->execute( [ $hashedNewPassword, $user_id ] );
     }
+    
+
 }
-
-?>

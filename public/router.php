@@ -56,17 +56,34 @@ switch ( $route ) {
         if ( $route === 'reset-password' )  $controller->showResetForm();
         if ( $route === 'update-password' ) $controller->updatePassword();
     break;
-
+    
+    // Rutas de admin
     case 'coaches':
     case 'register-coach': // Vista del form de registro 
     case 'create-coach': // POST para la creacion del couch
+    case 'test-mail':
+
         require_once __DIR__ . '/../app/controllers/AdminController.php';
         $controller = new AdminController();
         
         if($route === 'coaches') $controller->index();
-        if($route === 'register-coach') $controller->registerCoach(); // Renderiza la vista del form para registrar un coach
-        if($route === 'create-coach') $controller->register();  // POST para crear el coach
+        if($route === 'register-coach') $controller->registerCoachView(); // Renderiza la vista del form para registrar un coach
+        if($route === 'create-coach') $controller->registerCoachPost();  // POST para crear el coach
+        if($route === 'test-mail') $controller->testSendEmail('pablicjs@gmail.com');
+
     break;
+
+    // Rutas de profile -> Coach
+
+    case 'complete-register':
+    case 'save-profile':
+        require_once __DIR__ . '/../app/controllers/CoachController.php';
+        $controller = new CoachController();
+ 
+        if($route === 'complete-register') $controller->completeRegistrationView();
+        if($route === 'save-profile') $controller->completeRegistrationPost();
+    break;
+
     // --- SEGURIDAD: CIERRE DE SESIÓN ---
     case 'logout':
     /**

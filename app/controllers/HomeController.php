@@ -3,7 +3,7 @@
 
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../models/Swimmer.php';
+require_once __DIR__ . '/../models/Profile.php';
 class HomeController extends BaseController {
     /**
      * Muestra el panel principal.
@@ -11,7 +11,7 @@ class HomeController extends BaseController {
      * para mantener la coherencia en todo el proyecto.
      */
     private $userModel;
-    private $swimmerModel;
+    private $profileModel;
     private $pdo;
 
     public function __construct() {
@@ -24,13 +24,13 @@ class HomeController extends BaseController {
 
         // Inicializamos los modelos pasándoles la conexión única
         $this->userModel = new User( $pdo );
-        $this->swimmerModel = new Swimmer( $pdo );
+        $this->profileModel = new Profile( $pdo );
     }
 
     public function index() {
         // Verificamos si el usuario está logueado antes de mostrar el panel
         $this->checkAuth();
-
+        
         $data = [
             'title' => "Dashboard - Swimming School",
             'user'  => $_SESSION['email'] ?? 'Guest',
@@ -42,7 +42,7 @@ class HomeController extends BaseController {
         switch($data['role_id']){
             // Caso de rol administrador
             case 1: 
-                $activeAlumns = $this->swimmerModel->getSwimmersCount();
+                $activeAlumns = $this->userModel->getCountByRole(3);
                 $usersCount = $this->userModel->getUsersCount();
 
                 $data['active_alumns'] = $activeAlumns;
