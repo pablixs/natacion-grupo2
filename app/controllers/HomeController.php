@@ -43,10 +43,12 @@ class HomeController extends BaseController {
             // Caso de rol administrador
             case 1: 
                 $activeAlumns = $this->userModel->getCountByRole(3);
+                $activeCoaches = $this->userModel->getCountByRole(2);
                 $usersCount = $this->userModel->getUsersCount();
 
                 $data['active_alumns'] = $activeAlumns;
                 $data['total_users'] = $usersCount;
+                $data['active_coaches'] = $activeCoaches;
 
                 $this->render('administrator/home.view', $data);
                 break;

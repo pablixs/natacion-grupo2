@@ -1,9 +1,10 @@
 <?php 
-include __DIR__ . '/../users/layout/header.php'; 
+include __DIR__ . '/../administrator/layout/header.php'; 
 /* Se declara la variable y el tipo para que intelephense no marque error de variable no definida */
 /** @var string $name */
-/** @var string $active_alumns */
-/** @var string $total_users */
+/** @var int $active_alumns */
+/** @var int $active_coaches */
+/** @var int $total_users */
 ?>
 
 <div class="bg-white p-5 rounded shadow-sm">
@@ -12,22 +13,31 @@ include __DIR__ . '/../users/layout/header.php';
     <hr>
     <div class="row">
         <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
+            <a href="?url=home"  class="card text-decoration-none text-white bg-primary mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Alumnos activos</h5>
-                    <p class="card-text fs-2"><?=  $active_alumns ?></p>
+                    <h5 class="card-title">Alumnos</h5>
+                    <p class="card-text fs-2">Activos: <?=  $active_alumns ?></p>
+                </div>
+            </a>
+        </div>
+
+        <a href="#" class="col-md-4">
+            <div class="card text-decoration-none text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Profesores</h5>
+                    <p class="card-text fs-2">Activos: <?=  $active_coaches ?></p>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
+        </a>
+        <a href="#" class="col-md-4">
+            <div class="card text-decoration-none text-white bg-primary mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Usuarios totales</h5>
-                    <p class="card-text fs-2"><?=  $total_users ?></p>
+                    <h5 class="card-title">Usuarios</h5>
+                    <p class="card-text fs-2">Total: <?=  $total_users ?></p>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
-<?php include __DIR__ . '/../users/layout/footer.php'; ?>
+<?php include __DIR__ . '/../administrator/layout/footer.php'; ?>

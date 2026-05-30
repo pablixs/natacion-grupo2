@@ -90,6 +90,20 @@ class User {
         return $stmt->execute( [ $token_id ] );
     }
 
+
+    public function getUsersAndProfiles(){
+        $sql = "SELECT * 
+            FROM users u
+            INNER JOIN profiles p ON u.id = p.user_id
+            WHERE u.deleted_at IS NULL
+        ";
+
+        $stmt = $this->db->prepare( $sql );
+        $stmt->execute();
+        $user = $stmt->fetchAll( PDO::FETCH_ASSOC );
+        return $user;
+    }
+
     public function login( string $email, string $password ) {
         // Traemos los datos de users y los datos de perfil de swimmers
         $sql = "SELECT u.*, p.first_name, p.profile_image 
@@ -141,7 +155,7 @@ class User {
     }
 
     public function getUsersCount(){
-        $sql = "SELECT COUNT(DISTINCT u.id) as alumnos FROM users u";
+        $sql = "SELECT COUNT(DISTINCT u.id) as usuarios FROM users u";
 
         $stmt = $this->db->query($sql);
 
@@ -149,6 +163,8 @@ class User {
 
         return $usersCount;
     }
+
+
 
     /**
     * Valida si un token existe y no ha expirado.

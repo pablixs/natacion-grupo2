@@ -1,5 +1,5 @@
 <?php
-include __DIR__ . '/../users/layout/header.php';
+include __DIR__ . '/../administrator/layout/header.php';
 /* Se declara la variable y el tipo para que intelephense no marque error de variable no definida */
 /** @var int $coachs_data */
 ?>
@@ -23,4 +23,4 @@ include __DIR__ . '/../users/layout/header.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../users/layout/footer.php'; ?>
+<?php include __DIR__ . '/../administrator/layout/footer.php'; ?>

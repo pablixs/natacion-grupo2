@@ -82,6 +82,37 @@ class AdminController extends BaseController
         return $this->executeRegistration($fields);
     }
 
+    public function manageUsersDashboardView(){
+        // Solo permitimos pasar al role id 1 (admin)
+        $this->checkAuth(1);
+
+        $data = [
+            'title' => "Manage Users Dashboard",
+            'user'  => $_SESSION['email'] ?? 'Guest',
+            'name' => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 3
+        ];
+
+        $this->render('administrator/manage-users-dashboard.view', $data);
+    }
+
+    public function getUsersAndProfiles(){
+        $this->checkAuth(1);
+
+         try {
+        
+         $data = $this->userModel->getUsersAndProfiles();
+        
+            $this->json('success', $data);
+
+         } catch (Exception $e) {
+            
+            $this->json('error', $e->getMessage());
+         }
+
+
+    }
+
     /**
      * Lógica de inscripción con Transacción SQL.
      * Enseñamos que si algo falla en el medio, no debe quedar basura en la DB.

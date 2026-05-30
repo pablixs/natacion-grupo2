@@ -1,5 +1,5 @@
 <?php
-include __DIR__ . '/../users/layout/header.php';
+include __DIR__ . '/../administrator/layout/header.php';
 ?>
 
 <div class="container mt-5">
@@ -36,4 +36,4 @@ include __DIR__ . '/../users/layout/header.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../users/layout/footer.php'; ?>
+<?php include __DIR__ . '/../users/administrator/footer.php'; ?>

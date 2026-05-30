@@ -63,13 +63,22 @@ switch ( $route ) {
     case 'create-coach': // POST para la creacion del couch
     case 'test-mail':
 
+    case 'manage-users':
+
+    //test
+    case 'manage-users-get':
+
         require_once __DIR__ . '/../app/controllers/AdminController.php';
         $controller = new AdminController();
         
         if($route === 'coaches') $controller->index();
         if($route === 'register-coach') $controller->registerCoachView(); // Renderiza la vista del form para registrar un coach
         if($route === 'create-coach') $controller->registerCoachPost();  // POST para crear el coach
-        if($route === 'test-mail') $controller->testSendEmail('pablicjs@gmail.com');
+        if($route === 'test-mail') $controller->testSendEmail('cristiandaniiel3@gmail.com');
+        if($route === 'manage-users') $controller->manageUsersDashboardView();
+
+        if($route === 'manage-users-get') $controller->getUsersAndProfiles();
+
 
     break;
 

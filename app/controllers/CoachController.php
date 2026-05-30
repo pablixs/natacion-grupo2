@@ -45,6 +45,8 @@ class CoachController extends BaseController
         $this->render('coaches/complete-register.view', $data);
     }
 
+    
+
 
     public function completeRegistrationPost()
     {
