@@ -5,34 +5,34 @@
  */
 import { handleAlert } from "../../services/ui.js";
 
-export function initSaveProfileCoach() {
-    const formCoach = document.getElementById("formSaveProfile");
-    const token = document.getElementById("token").value;
-    console.log("token: " + token)
-    
-    if (!formCoach) return;
-    formCoach.addEventListener("submit", async (e) => {
+export function initRegisterCoach() {
+    const formSaveProfile = document.getElementById("formRegisterCoach");
+    console.log("console log antes del if: ", formSaveProfile);
+    if (!formSaveProfile) return;
+    formSaveProfile.addEventListener("submit", async (e) => {
         e.preventDefault();
         /**
          * FormData empaqueta automáticamente todos los campos del formulario,
          * incluyendo los archivos (files), siempre que el input tenga el atributo 'name'.
          */
-        const formData = new FormData(formCoach);
+        const formData = new FormData(formSaveProfile);
            try {
 
-            const response = await fetch(`?url=save-profile&token=${token}`, {
+            handleAlert("loading");
+            const response = await fetch("?url=create-coach", {
                 method: "POST",
                 body: formData,
             });
 
             const text = await response.text();
-            console.log("text antes del try: ", text);
             try {
+                handleAlert("loaded");
                 const data = JSON.parse(text);
                 console.log("data antes del handleAlert: ", data);
                 // El servidor retornará el status (success, error, warning) y el mensaje
                 handleAlert(data.status, data.message, data.redirect);
             } catch (err) {
+                handleAlert("loading");
                 // En caso de un error crítico de PHP (Fatal Error), la respuesta no será un JSON válido
                 console.error("Respuesta inesperada del servidor:", text);
                 handleAlert(

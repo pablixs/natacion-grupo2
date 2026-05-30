@@ -5,20 +5,22 @@
  */
 import { handleAlert } from "../../services/ui.js";
 
-export function initRegisterCoach() {
-    const formSaveProfile = document.getElementById("formRegisterCoach");
-    console.log("console log antes del if: ", formSaveProfile);
-    if (!formSaveProfile) return;
-    formSaveProfile.addEventListener("submit", async (e) => {
+export function initSaveProfile() {
+    const formCoach = document.getElementById("formSaveProfile");
+    const token = document.getElementById("token").value;
+    console.log("token: " + token)
+    
+    if (!formCoach) return;
+    formCoach.addEventListener("submit", async (e) => {
         e.preventDefault();
         /**
          * FormData empaqueta automáticamente todos los campos del formulario,
          * incluyendo los archivos (files), siempre que el input tenga el atributo 'name'.
          */
-        const formData = new FormData(formSaveProfile);
+        const formData = new FormData(formCoach);
            try {
 
-            const response = await fetch("?url=create-coach", {
+            const response = await fetch(`?url=save-profile&token=${token}`, {
                 method: "POST",
                 body: formData,
             });

@@ -34,13 +34,15 @@ switch ( $route ) {
 
     // --- MÓDULO DE USUARIOS Y AUTENTICACIÓN ---
     // Agrupamos rutas relacionadas para evitar repetir el require_once
-    case 'login':
     case 'authenticate':
-    case 'register':
     case 'forgot-password':
     case 'send-reset':
     case 'reset-password':
     case 'update-password':
+    case 'login':
+    case 'complete-register':
+    case 'save-profile':
+ 
         require_once __DIR__ . '/../app/controllers/UserController.php';
         $controller = new UserController();
 
@@ -50,39 +52,50 @@ switch ( $route ) {
         */
         if ( $route === 'login' )           $controller->showLogin();
         if ( $route === 'authenticate' )    $controller->authenticate();
-        if ( $route === 'register' )        $controller->register();
         if ( $route === 'forgot-password' ) $controller->forgotPassword();
         if ( $route === 'send-reset' )      $controller->sendReset();
         if ( $route === 'reset-password' )  $controller->showResetForm();
         if ( $route === 'update-password' ) $controller->updatePassword();
+        
+        if($route === 'complete-register') $controller->completeRegistrationView();
+        if($route === 'save-profile') $controller->completeRegistrationPost();
     break;
     
     // Rutas de admin
     case 'coaches':
     case 'register-coach': // Vista del form de registro 
     case 'create-coach': // POST para la creacion del couch
+    case 'swimmers':
+    case 'register-swimmer':
+    case 'create-swimmer':
     case 'test-mail':
+
+    //test
+    // case 'manage-users-get':
 
         require_once __DIR__ . '/../app/controllers/AdminController.php';
         $controller = new AdminController();
         
-        if($route === 'coaches') $controller->index();
+        if($route === 'coaches') $controller->coachesView();
         if($route === 'register-coach') $controller->registerCoachView(); // Renderiza la vista del form para registrar un coach
         if($route === 'create-coach') $controller->registerCoachPost();  // POST para crear el coach
-        if($route === 'test-mail') $controller->testSendEmail('pablicjs@gmail.com');
+
+        if($route === 'swimmers') $controller->swimmersView();
+        if($route === 'register-swimmer') $controller->registerSwimmerView(); // Renderiza la vista del form para registrar un swimmer
+        if($route === 'create-swimmer') $controller->registerSwimmerPost();  // POST para crear el swimmer
+
+
+        if($route === 'test-mail') $controller->testSendEmail('cristiandaniiel3@gmail.com');
+
+        if($route === 'manage-users-get') $controller->getUsersAndProfiles();
+
 
     break;
 
     // Rutas de profile -> Coach
 
-    case 'complete-register':
-    case 'save-profile':
-        require_once __DIR__ . '/../app/controllers/CoachController.php';
-        $controller = new CoachController();
- 
-        if($route === 'complete-register') $controller->completeRegistrationView();
-        if($route === 'save-profile') $controller->completeRegistrationPost();
-    break;
+    
+    //break;
 
     // --- SEGURIDAD: CIERRE DE SESIÓN ---
     case 'logout':

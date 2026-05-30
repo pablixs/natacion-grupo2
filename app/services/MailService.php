@@ -84,7 +84,7 @@ class MailService
         }
     }
 
-    public function sendEmailCompleteProfile($toEmail, $token)
+    public function sendEmailCompleteProfileCoach($toEmail, $token)
     {
         $colorPrincipal = '#0077b6';
         $colorAcento    = '#00b4d8';
@@ -113,56 +113,52 @@ class MailService
             $profileLink  = rtrim($baseUrl, '/') . '?url=complete-register&token=' . $token;
 
             $mail->Body = "
-<div style='background-color: {$colorFondo}; padding: 40px; font-family: Arial, sans-serif; line-height: 1.6;'>
-    <div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #cce3ee;'>
+              <div style='background-color: {$colorFondo}; padding: 40px; font-family: Arial, sans-serif; line-height: 1.6;'><<div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #cce3ee;'>
 
-        <!-- Header -->
-        <div style='background-color: {$colorPrincipal}; padding: 25px 20px; text-align: center;'>
-            <h1 style='color: #ffffff; margin: 0; font-size: 22px; letter-spacing: 1px;'>🏊 Escuela de Natación</h1>
-            <p style='color: {$colorAcento}; margin: 6px 0 0; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;'>Área de Profesores</p>
-        </div>
+                <!-- Header -->
+                <div style='background-color: {$colorPrincipal}; padding: 25px 20px; text-align: center;'>
+                    <h1 style='color: #ffffff; margin: 0; font-size: 22px; letter-spacing: 1px;'>🏊 Escuela de Natación</h1>
+                    <p style='color: {$colorAcento}; margin: 6px 0 0; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;'>Área de Profesores</p>
+                </div>
 
-        <!-- Body -->
-        <div style='padding: 35px 30px; text-align: center;'>
-            <h2 style='color: #004e7c; margin-top: 0;'>¡Bienvenido al equipo!</h2>
-            <p style='color: #555555; font-size: 16px;'>
-                Tu cuenta de profesor fue creada exitosamente. Para poder operar en el sistema necesitamos que completes tu perfil con tus datos personales y profesionales.
-            </p>
+                <!-- Body -->
+                <div style='padding: 35px 30px; text-align: center;'>
+                    <h2 style='color: #004e7c; margin-top: 0;'>¡Bienvenido al equipo!</h2>
+                    <p style='color: #555555; font-size: 16px;'>
+                        Tu cuenta de profesor fue creada exitosamente. Para poder operar en el sistema necesitamos que completes tu perfil con tus datos personales y profesionales.
+                    </p>
 
-            <div style='background-color: {$colorFondo}; border-left: 4px solid {$colorAcento}; border-radius: 4px; padding: 15px 20px; margin: 25px 0; text-align: left;'>
-                <p style='margin: 0; color: #444444; font-size: 14px;'><strong>¿Qué vas a completar?</strong></p>
-                <ul style='margin: 10px 0 0; padding-left: 20px; color: #666666; font-size: 14px;'>
-                    <li>Datos personales y de contacto</li>
-                    <li>Nueva contraseña</li>
-                    <li>Especialidad</li>
-                </ul>
-            </div>
+                    <div style='background-color: {$colorFondo}; border-left: 4px solid {$colorAcento}; border-radius: 4px; padding: 15px 20px; margin: 25px 0; text-align: left;'>
+                        <p style='margin: 0; color: #444444; font-size: 14px;'><strong>¿Qué vas a completar?</strong></p>
+                        <ul style='margin: 10px 0 0; padding-left: 20px; color: #666666; font-size: 14px;'>
+                            <li>Datos personales y de contacto</li>
+                            <li>Nueva contraseña</li>
+                            <li>Especialidad</li>
+                        </ul>
+                    </div>
 
-            <div style='margin: 30px 0;'>
-                <a href='{$profileLink}'
-                   style='background-color: {$colorPrincipal}; color: #ffffff; padding: 15px 30px;
-                          text-decoration: none; border-radius: 5px; font-weight: bold;
-                          font-size: 15px; display: inline-block;'>
-                    Completar mi perfil
-                </a>
-            </div>
+                    <div style='margin: 30px 0;'>
+                        <a href='{$profileLink}'
+                        style='background-color: {$colorPrincipal}; color: #ffffff; padding: 15px 30px;
+                                text-decoration: none; border-radius: 5px; font-weight: bold;
+                                font-size: 15px; display: inline-block;'>
+                            Completar mi perfil
+                        </a>
+                    </div>
 
-            <p style='color: #999999; font-size: 12px; margin-top: 25px;'>
-                Este enlace es personal e intransferible. Expirará en <strong>24 horas</strong>.<br>
-                Si no esperabas este correo, podés ignorarlo sin problema.
-            </p>
-        </div>
+                    <p style='color: #999999; font-size: 12px; margin-top: 25px;'>
+                        Este enlace es personal e intransferible. Expirará en <strong>72 horas</strong>.<br>
+                        Si no esperabas este correo, podés ignorarlo sin problema.
+                    </p>
+                </div>
 
-        <!-- Footer -->
-        <div style='background-color: #f0f4f8; padding: 15px; text-align: center; border-top: 1px solid #dde8f0;'>
-            <p style='color: #aaaaaa; font-size: 11px; margin: 0;'>
-                © " . date('Y') . " Escuela de Natación — Panel Administrativo
-            </p>
-        </div>
-
-    </div>
-</div>
-";
+                <!-- Footer -->
+                <div style='background-color: #f0f4f8; padding: 15px; text-align: center; border-top: 1px solid #dde8f0;'>
+                    <p style='color: #aaaaaa; font-size: 11px; margin: 0;'>
+                        © " . date('Y') . " Escuela de Natación — Panel Administrativo
+                    </p>
+                </div>
+        </div></div>";
 
             $mail->send();
             return true;
@@ -172,4 +168,91 @@ class MailService
             return false;
         }
     }
+
+    public function sendEmailCompleteProfileSwimmer($toEmail, $token)
+    {
+        $colorPrincipal = '#0077b6';
+        $colorAcento    = '#00b4d8';
+        $colorFondo     = '#f0f7fa';
+
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isSMTP();
+            $mail->Host       = Env::get('MAIL_HOST');
+            $mail->SMTPAuth   = true;
+            $mail->Username   = Env::get('MAIL_USERNAME');
+            $mail->Password   = Env::get('MAIL_PASSWORD');
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = Env::get('MAIL_PORT');
+
+            $mail->setFrom(Env::get('MAIL_FROM'), 'Soporte Escuela de Natación');
+            $mail->addAddress($toEmail);
+
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = 'Completá tu perfil de alumno';
+
+            $baseUrl     = Env::get('APP_URL');
+            // TODO: reemplazá esta URL con la ruta real de completar perfil
+            $profileLink  = rtrim($baseUrl, '/') . '?url=complete-register&token=' . $token;
+            $mail->Body = " <div style='background-color: {$colorFondo}; padding: 40px; font-family: Arial, sans-serif; line-height: 1.6;'>
+                <div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #cce3ee;'>
+
+                    <!-- Header -->
+                    <div style='background-color: {$colorPrincipal}; padding: 25px 20px; text-align: center;'>
+                        <h1 style='color: #ffffff; margin: 0; font-size: 22px; letter-spacing: 1px;'>🏊 Escuela de Natación</h1>
+                        <p style='color: {$colorAcento}; margin: 6px 0 0; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;'>Área de Alumnos</p>
+                    </div>
+
+                    <!-- Body -->
+                    <div style='padding: 35px 30px; text-align: center;'>
+                        <h2 style='color: #004e7c; margin-top: 0;'>¡Ya estás casi listo para nadar!</h2>
+                        <p style='color: #555555; font-size: 16px;'>
+                            Tu cuenta fue creada exitosamente. Para poder inscribirte en las clases y gestionar tu asistencia, necesitamos que completes tu perfil con tus datos personales.
+                        </p>
+
+                        <div style='background-color: {$colorFondo}; border-left: 4px solid {$colorAcento}; border-radius: 4px; padding: 15px 20px; margin: 25px 0; text-align: left;'>
+                            <p style='margin: 0; color: #444444; font-size: 14px;'>📋 <strong>¿Qué vas a completar?</strong></p>
+                            <ul style='margin: 10px 0 0; padding-left: 20px; color: #666666; font-size: 14px;'>
+                                <li>Datos personales y de contacto</li>
+                                <li>Contraseña e imagen de perfil</li>
+                            </ul>
+                        </div>
+
+                        <div style='margin: 30px 0;'>
+                            <a href='{$profileLink}'
+                            style='background-color: {$colorPrincipal}; color: #ffffff; padding: 15px 30px;
+                                    text-decoration: none; border-radius: 5px; font-weight: bold;
+                                    font-size: 15px; display: inline-block;'>
+                                Completar mi perfil
+                            </a>
+                        </div>
+
+                        <p style='color: #999999; font-size: 12px; margin-top: 25px;'>
+                            Este enlace es personal e intransferible. Expirará en <strong>72 horas</strong>.<br>
+                            Si no esperabas este correo, podés ignorarlo sin problema.
+                        </p>
+                    </div>
+
+                    <!-- Footer -->
+                    <div style='background-color: #f0f4f8; padding: 15px; text-align: center; border-top: 1px solid #dde8f0;'>
+                        <p style='color: #aaaaaa; font-size: 11px; margin: 0;'>
+                            © " . date('Y') . " Escuela de Natación — Panel Administrativo
+                        </p>
+                    </div>
+
+                </div>
+        </div>";
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            echo 'Error de PHPMailer: ' . $mail->ErrorInfo;
+            die();
+            return false;
+        }
+    }
+
+
 }
