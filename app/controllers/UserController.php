@@ -22,8 +22,12 @@ class UserController extends BaseController
 
         // Inicializamos los modelos pasándoles la conexión única
         $this->userModel = new User($pdo);
+<<<<<<< HEAD
         $this->profileModel = new Profile($pdo);
         $this->coachModel = new Coach($pdo);
+=======
+        $this->swimmerModel = new Swimmer($pdo);
+>>>>>>> origin/main
     }
 
     // --- SECCIÓN: VISTAS Y LISTADOS ---
@@ -38,7 +42,11 @@ class UserController extends BaseController
         $this->checkAuth();
         // Seguridad: si no hay sesión, al login.
 
+<<<<<<< HEAD
         $swimmers = $this->userModel->getCountByRole(3);
+=======
+        $swimmers = $this->swimmerModel->getAll();
+>>>>>>> origin/main
         $this->render('users/index', ['swimmers' => $swimmers]);
     }
 
@@ -47,6 +55,7 @@ class UserController extends BaseController
         $this->render('users/login.view');
     }
 
+<<<<<<< HEAD
     public function forgotPassword()
     {
         $this->render('users/forgot-password.view', ['title' => 'Recuperar Contraseña']);
@@ -88,6 +97,29 @@ class UserController extends BaseController
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return header('Location: ?url=login');
+=======
+    public function showRegister()
+    {
+        $this->render('users/register.view', ['title' => 'Inscripción de Alumnos']);
+    }
+
+    public function forgotPassword()
+    {
+        $this->render('users/forgot-password.view', ['title' => 'Recuperar Contraseña']);
+    }
+
+    // --- SECCIÓN: PROCESAMIENTO DE DATOS ( POST ) ---
+
+    /**
+     * Punto de entrada para el registro de nuevos alumnos.
+     * Aquí separamos la validación de la lógica de negocio.
+     */
+
+    public function register()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->showRegister();
+>>>>>>> origin/main
         }
 
         $token = $_GET['token'];
@@ -100,21 +132,33 @@ class UserController extends BaseController
         $fields = [
             'first_name'    => trim($_POST['nombre'] ?? ''),
             'last_name'     => trim($_POST['apellido'] ?? ''),
+<<<<<<< HEAD
+=======
+            'email'          => trim($_POST['email'] ?? ''),
+>>>>>>> origin/main
             'password'       => $_POST['password'] ?? '',
             'passwordrepeat' => $_POST['passwordrepeat'] ?? '',
             'birth_date' => trim($_POST['birth_date'] ?? ''),
             'phone'          => trim($_POST['telefono'] ?? ''),
+<<<<<<< HEAD
             'specialty' => $_POST['especialidad'] ?? null,
             'profile_image'  => 'default-profile.png', //valor por defecto
             'user_id' => $user_id,
             'token_id' => $token_id
 
+=======
+            'profile_image'  => 'default-profile.png' // Valor por defecto
+>>>>>>> origin/main
         ];
 
 
         // 2. Validaciones Críticas ( Uso de 'Early Returns' para evitar anidación de IFs )
         if ($this->hasEmptyFields($fields)) {
+<<<<<<< HEAD
             return $this->json('warning', implode(',', $fields));
+=======
+            return $this->json('warning', 'Faltan datos obligatorios.');
+>>>>>>> origin/main
         }
 
         // Validando minimo y maximo de numero de telefono
@@ -127,6 +171,12 @@ class UserController extends BaseController
             return $this->json('warning', 'Las contraseñas no coinciden');
         }
 
+<<<<<<< HEAD
+=======
+        if (!filter_var($fields['email'], FILTER_VALIDATE_EMAIL)) {
+            return $this->json('error', 'El email ingresado no es válido.');
+        }
+>>>>>>> origin/main
 
         if (strlen($fields['password']) < 6) {
             return $this->json('warning', 'La contraseña es muy corta (mín. 6 caracteres).');
@@ -167,6 +217,7 @@ class UserController extends BaseController
             }
         }
 
+<<<<<<< HEAD
         return $this->executeRegistration($fields, $tempFile);
     }
 
@@ -185,6 +236,46 @@ class UserController extends BaseController
             $this->coachModel->updatePasswordWhenSaveProfile($hashedPassword, $user_id);
             $this->userModel->setProfileCreatedTrueByUserId($user_id);
             $this->userModel->setTokenToExpired($token_id);
+=======
+        // 3. Pasamos a la ejecución de la lógica
+        return $this->executeRegistration($fields, $tempFile);
+    }
+
+    /**
+     * Lógica de inscripción con Transacción SQL.
+     * Enseñamos que si algo falla en el medio, no debe quedar basura en la DB.
+     */
+
+    private function executeRegistration($f, $tempFile = null)
+    {
+
+        try {
+            if ($this->userModel->findByEmail($f['email'])) {
+                // Si el usuario existe, borramos el archivo físico que acabamos de subir
+                if ($tempFile && file_exists($tempFile)) {
+                    unlink($tempFile);
+                }
+                $baseUrl = rtrim(Env::get('APP_URL'), '/');
+
+                $loginUrl = $baseUrl . '/?url=login';
+
+                return $this->json('user_exists', 'Ya tienes una cuenta registrada.', Env::get('APP_URL') . '/?url=login');
+            }
+
+            $this->pdo->beginTransaction();
+
+            // Tabla: users
+            $userId = $this->userModel->createUser([
+                'email'    => $f['email'],
+                'password' => $f['password'],
+                'role_id'  => 3 // Rol Swimmer
+            ]);
+
+            if (!$userId) throw new Exception('Error al crear credenciales.');
+
+            $f['user_id'] = $userId;
+            $this->swimmerModel->create($f);
+>>>>>>> origin/main
 
             $this->pdo->commit();
 
@@ -321,6 +412,7 @@ class UserController extends BaseController
         return $this->json('error', 'El enlace es inválido o ha expirado.');
     }
 
+<<<<<<< HEAD
     public function validateToken(string $token)
     {
         return $this->coachModel->validateToken($token);
@@ -330,5 +422,50 @@ class UserController extends BaseController
     private function hasEmptyFields($f)
     {
         return empty($f['first_name']) || empty($f['last_name']) || empty($f['password'] || empty($f['phone'] || empty($f['birth_date'])));
+=======
+    private function hasEmptyFields($f)
+    {
+        return empty($f['first_name']) || empty($f['last_name']) || empty($f['email']) || empty($f['password'] || empty($f['phone'] || empty($f['birth_date'])));
+    }
+
+    // Actualizacion de perfil, obtiene id del usuario logueado
+    public function profile()
+    {
+        $this->checkAuth();
+
+        $userId = $_SESSION['user_id'];
+
+        $swimmer = $this->swimmerModel->findByUserId($userId);
+
+        $this->render('users/profile.view', [
+            'title' => 'Mi Perfil',
+            'swimmer' => $swimmer
+        ]);
+    }
+
+    public function updateProfile()
+    {
+        $this->checkAuth();
+
+        $userId = $_SESSION['user_id'];
+
+        $data = [
+            'first_name' => trim($_POST['nombre'] ?? ''),
+            'last_name' => trim($_POST['apellido'] ?? ''),
+            'phone' => trim($_POST['telefono'] ?? ''),
+            'birth_date' => trim($_POST['birth_date'] ?? '')
+        ];
+        // Validacion datos obligatorios
+        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['phone']) || empty($data['birth_date'])) {
+            return $this->json('warning', 'Faltan datos obligatorios.');
+        }
+
+        $this->swimmerModel->updateProfile($userId, $data);
+
+        $_SESSION['first_name'] = $data['first_name'];
+
+        header('Location: ?url=profile');
+        exit;
+>>>>>>> origin/main
     }
 }

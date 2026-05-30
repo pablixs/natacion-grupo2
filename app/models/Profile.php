@@ -3,7 +3,8 @@
 class Profile {
     private $db;
 
-    public function __construct($pdo) {
+    public function __construct($pdo)
+    {
         $this->db = $pdo;
     }
 
@@ -25,7 +26,8 @@ class Profile {
      * Inserta los datos personales vinculados a un user_id, incluyendo la imagen.
      * @param array $data ['user_id', 'first_name', 'last_name', 'phone', 'profile_image']
      */
-    public function create(array $data) {
+    public function create(array $data)
+    {
         // Agregamos profile_image al INSERT
         $sql = "INSERT INTO profiles (user_id, first_name, 
         last_name, phone, 
@@ -34,7 +36,7 @@ class Profile {
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->db->prepare($sql);
-        
+
         return $stmt->execute([
             $data['user_id'],
             $data['first_name'],
@@ -43,13 +45,28 @@ class Profile {
             $data['specialty'] ?? null,
             $data['birth_date'],
             // Si no viene imagen, podemos pasar un null o el nombre por defecto
-            $data['profile_image'] ?? 'default-profile.png' 
+            $data['profile_image'] ?? 'default-profile.png'
+        ]);
+
+        $stmt->execute([$userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    // Enviamos datos actualizados
+    public function updateProfile($userId, array $data)
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE swimmers 
+         SET first_name = ?, last_name = ?, phone = ?, birth_date = ?
+         WHERE user_id = ?"
+        );
+
+        return $stmt->execute([
+            $data['first_name'],
+            $data['last_name'],
+            $data['phone'],
+            $data['birth_date'],
+            $userId
         ]);
     }
-
-    
-
-    
-
-    
 }
