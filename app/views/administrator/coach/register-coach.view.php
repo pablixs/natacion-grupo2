@@ -1,5 +1,5 @@
 <?php
-include __DIR__ . '/../administrator/layout/header.php';
+include __DIR__ . '/../../administrator/layout/header.php';
 ?>
 
 <div class="container mt-5">
@@ -13,7 +13,7 @@ include __DIR__ . '/../administrator/layout/header.php';
                     <form id="formRegisterCoach" action="?url=create-coach" method="POST" enctype="multipart/form-data">
                         <div class="row row-cols-1 row-cols-md-2">
                             <div class="col mb-3 w-100">
-                                <p>Para dar de alta un profesor debes ingresar su correo y la especialidad. Se le asignará un usuario y luego el profesor deberá completar el registro manualmente.</p>
+                                <p>Para dar de alta un profesor debes ingresar su correo. Se le asignará un usuario y luego el profesor deberá completar el registro manualmente.</p>
                             </div>
                             <hr class="w-100">
 
@@ -36,4 +36,4 @@ include __DIR__ . '/../administrator/layout/header.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../users/administrator/footer.php'; ?>
+<?php include __DIR__ . '/../../administrator/layout/footer.php'; ?>

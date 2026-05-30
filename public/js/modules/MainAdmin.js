@@ -5,6 +5,7 @@
 
 import { initTable } from "./admin/tableManageUsers.js";
 import { initRegisterCoach } from "./admin/formRegisterCoach.js"
+import { initRegisterSwimmer } from "./admin/formRegisterSwimmer.js"
 // Esperamos a que el DOM esté completamente cargado para evitar errores de referencia
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -12,5 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cada módulo interno se encargará de verificar si su formulario existe en la vista actual.
     initTable();
     initRegisterCoach();
+    initRegisterSwimmer();
     console.log("Auth module initialized successfully.");
 });

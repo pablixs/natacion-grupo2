@@ -6,6 +6,7 @@ import { initLogin } from "./auth/formLogin.js";
 import { initRegister } from "./auth/formRegister.js";
 import { initForgotPassword } from "./auth/formForgotPassword.js";
 import { initResetPassword } from "./auth/formResetPassword.js";
+import { initSaveProfile } from "./auth/formSaveProfile.js"
 // Esperamos a que el DOM esté completamente cargado para evitar errores de referencia
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -15,5 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initRegister();
     initForgotPassword();
     initResetPassword();
+    initSaveProfile();
     console.log("Auth module initialized successfully.");
 });

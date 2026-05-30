@@ -5,9 +5,8 @@
  */
 import { handleAlert } from "../../services/ui.js";
 
-export function initRegisterCoach() {
-    const formSaveProfile = document.getElementById("formRegisterCoach");
-    console.log("console log antes del if: ", formSaveProfile);
+export function initRegisterSwimmer() {
+    const formSaveProfile = document.getElementById("formRegisterSwimmer");
     if (!formSaveProfile) return;
     formSaveProfile.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -17,22 +16,22 @@ export function initRegisterCoach() {
          */
         const formData = new FormData(formSaveProfile);
            try {
-
             handleAlert("loading");
-            const response = await fetch("?url=create-coach", {
+            const response = await fetch("?url=create-swimmer", {
                 method: "POST",
                 body: formData,
             });
 
             const text = await response.text();
+            console.log("text antes del try: ", text);
             try {
                 handleAlert("loaded");
                 const data = JSON.parse(text);
-                console.log("data antes del handleAlert: ", data);
                 // El servidor retornará el status (success, error, warning) y el mensaje
                 handleAlert(data.status, data.message, data.redirect);
             } catch (err) {
-                handleAlert("loading");
+                let loading = false;
+                handleAlert("loaded");
                 // En caso de un error crítico de PHP (Fatal Error), la respuesta no será un JSON válido
                 console.error("Respuesta inesperada del servidor:", text);
                 handleAlert(

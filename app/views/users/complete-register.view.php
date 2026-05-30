@@ -1,5 +1,7 @@
 <?php
 /** @var string $token */
+/** @var int $role_id */
+
 include __DIR__ . '/../users/layout/header.php';
 /* Se declara la variable y el tipo para que intelephense no marque error de variable no definida */
 /** @var int $coachs_data */
@@ -58,7 +60,7 @@ include __DIR__ . '/../users/layout/header.php';
                                 <label class="form-label">Foto de Perfil</label>
                                 <input type="file" name="profile_image" class="form-control" accept="image/*">
                             </div>   
-
+                            <?php if($role_id == '2') : ?>
                             <div class="col mb-3">
                                 <label for="especialidad" class="form-label">Especialidad</label>
                                 <select class="form-select" aria-label="Selecciona una especialidad" name="especialidad">
@@ -69,7 +71,7 @@ include __DIR__ . '/../users/layout/header.php';
                                     <option value="mariposa">Mariposa</option>
                                 </select>
                             </div>
-
+                        <?php endif; ?>
 
                         </div>
 

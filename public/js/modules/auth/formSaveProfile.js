@@ -5,7 +5,7 @@
  */
 import { handleAlert } from "../../services/ui.js";
 
-export function initSaveProfileCoach() {
+export function initSaveProfile() {
     const formCoach = document.getElementById("formSaveProfile");
     const token = document.getElementById("token").value;
     console.log("token: " + token)

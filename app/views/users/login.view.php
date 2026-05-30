@@ -18,11 +18,7 @@
                         <button type="submit" class="btn btn-success w-100">Entrar</button>
                     </form>
 
-                    <hr>
-                    <div class="mt-3 text-center">
-                        <p class="mb-1">¿No tienes cuenta? <a href="?url=register">Regístrate aquí</a></p>
-                        <a href="?url=forgot-password" class="text-muted small">Olvidé mi contraseña</a>
-                    </div>
+                   
                 </div>
             </div>
         </div>

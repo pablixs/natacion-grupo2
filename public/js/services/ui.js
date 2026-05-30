@@ -4,7 +4,7 @@
  * directamente de la librería y para estandarizar las respuestas del sistema.
  */
 
-export const handleAlert = (status, message, redirectUrl = null) => {
+export const handleAlert = (status, message = null, redirectUrl = null) => {
   // Definimos la configuración base según el estado (status) que devuelve el servidor
   switch (status) {
     case "user_exists":
@@ -59,6 +59,13 @@ export const handleAlert = (status, message, redirectUrl = null) => {
       Swal.fire("Attention", message, "warning");
       break;
 
+    case "loading":
+      Swal.showLoading();
+    break;
+
+    case "loaded":
+      Swal.hideLoading()
+    break;
     default:
       // Avisos generales
       Swal.fire("Notice", message, "info");

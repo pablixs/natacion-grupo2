@@ -13,7 +13,7 @@ include __DIR__ . '/../administrator/layout/header.php';
     <hr>
     <div class="row">
         <div class="col-md-4">
-            <a href="?url=home"  class="card text-decoration-none text-white bg-primary mb-3">
+            <a href="?url=swimmers"  class="card text-decoration-none text-white bg-primary mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Alumnos</h5>
                     <p class="card-text fs-2">Activos: <?=  $active_alumns ?></p>
@@ -21,7 +21,7 @@ include __DIR__ . '/../administrator/layout/header.php';
             </a>
         </div>
 
-        <a href="#" class="col-md-4">
+        <a href="?url=coaches" class="col-md-4">
             <div class="card text-decoration-none text-white bg-primary mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Profesores</h5>

@@ -21,7 +21,69 @@ class AdminController extends BaseController
         $this->profileModel = new Profile($pdo);
     }
 
-    public function index()
+    
+    public function swimmersView(){
+        // Solo permitimos pasar al role id 1 (admin)
+        $this->checkAuth(1);
+
+        $data = [
+            'title' => "Manage Users Dashboard",
+            'user'  => $_SESSION['email'] ?? 'Guest',
+            'name' => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 3
+        ];
+
+        $data['swimmers_data'] = $this->userModel->getCountByRole(3);
+
+        $this->render('administrator/swimmer/swimmers.view', $data);
+    }
+
+    public function registerSwimmerView()
+    {
+        // Solo permitimos pasar al role id 1 (admin)
+        $this->checkAuth(1);
+
+        $data = [
+            'title' => "Dar de alta un alumno - Swimming School",
+            'user'  => $_SESSION['email'] ?? 'Guest',
+            'name' => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 3
+        ];
+
+        $this->render('administrator/swimmer/register-swimmer.view', $data);
+    }
+
+    // Refactorizar más adelante un solo registerPost y pasar el 
+    // role id por parametro para evitar repetir
+    public function registerSwimmerPost()
+    {
+        $this->checkAuth(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return header('Location: ?url=home');
+        }
+
+        // 1. Recolección y Sanitización ( Evitamos espacios vacíos y basura )
+        $fields = [
+            'email'          => trim($_POST['email'] ?? ''),
+            'role_id'         => 3 /* Rol: swimmer */,
+            'need_change_password' => 1,
+        ];
+
+
+        // 2. Validaciones Críticas ( Uso de 'Early Returns' para evitar anidación de IFs )
+        if (empty($fields['email'])) {
+            return $this->json('warning', 'Faltan datos obligatorios.');
+        }
+
+        if (!filter_var($fields['email'], FILTER_VALIDATE_EMAIL)) {
+            return $this->json('error', 'El email ingresado no es válido.');
+        }
+
+        return $this->executeRegistration($fields);
+    }
+
+    public function coachesView()
     {
         // Solo permitimos pasar al role id 1 (admin)
         $this->checkAuth(1);
@@ -35,7 +97,7 @@ class AdminController extends BaseController
 
         $data['coachs_data'] = $this->userModel->getCountByRole(2);
 
-        $this->render('administrator/coaches.view', $data);
+        $this->render('administrator/coach/coaches.view', $data);
     }
 
 
@@ -51,7 +113,7 @@ class AdminController extends BaseController
             'role_id' => $_SESSION['role_id'] ?? 3
         ];
 
-        $this->render('administrator/register-coach.view', $data);
+        $this->render('administrator/coach/register-coach.view', $data);
     }
 
     public function registerCoachPost()
@@ -59,7 +121,7 @@ class AdminController extends BaseController
         $this->checkAuth(1);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->index();
+            return header('Location: ?url=home');
         }
 
         // 1. Recolección y Sanitización ( Evitamos espacios vacíos y basura )
@@ -82,44 +144,7 @@ class AdminController extends BaseController
         return $this->executeRegistration($fields);
     }
 
-    public function manageUsersDashboardView(){
-        // Solo permitimos pasar al role id 1 (admin)
-        $this->checkAuth(1);
-
-        $data = [
-            'title' => "Manage Users Dashboard",
-            'user'  => $_SESSION['email'] ?? 'Guest',
-            'name' => $_SESSION['first_name'] ?? 'Guest',
-            'role_id' => $_SESSION['role_id'] ?? 3
-        ];
-
-        $this->render('administrator/manage-users-dashboard.view', $data);
-    }
-
-    public function getUsersAndProfiles(){
-        $this->checkAuth(1);
-
-         try {
-        
-         $data = $this->userModel->getUsersAndProfiles();
-        
-            $this->json('success', $data);
-
-         } catch (Exception $e) {
-            
-            $this->json('error', $e->getMessage());
-         }
-
-
-    }
-
-    /**
-     * Lógica de inscripción con Transacción SQL.
-     * Enseñamos que si algo falla en el medio, no debe quedar basura en la DB.
-     */
-
-    private function executeRegistration(array $f)
-    {
+    private function executeRegistration(array $f){
         $this->checkAuth(1);
 
         try {
@@ -130,12 +155,13 @@ class AdminController extends BaseController
             $this->pdo->beginTransaction();
 
             $email = $f['email'];
+            $role_id = $f['role_id'];
 
             // Tabla: users
             $userId = $this->userModel->createUser([
                 'email'    => $email,
                 'password' => "adminpassword",
-                'role_id'  => $f['role_id'],
+                'role_id'  => $role_id,
                 'profile_created' => 0
             ]);
 
@@ -154,7 +180,9 @@ class AdminController extends BaseController
                 $expires_at
             );
 
-            $this->sendCompleteRegister($email, $token);
+
+            $this->sendCompleteRegister($email, $token, $role_id);
+
 
             $this->pdo->commit();
 
@@ -167,7 +195,7 @@ class AdminController extends BaseController
             }
 
             // 3. Construimos la URL final
-            $coachesUrl = $baseUrl . '/?url=coaches';
+            $coachesUrl = $baseUrl . '/?url=home';
 
 
 
@@ -178,6 +206,30 @@ class AdminController extends BaseController
             return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
         }
     }
+
+    
+
+    public function getUsersAndProfiles()
+    {
+        $this->checkAuth(1);
+
+        try {
+
+            $data = $this->userModel->getUsersAndProfiles();
+
+            $this->json('success', $data);
+        } catch (Exception $e) {
+
+            $this->json('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Lógica de inscripción con Transacción SQL.
+     * Enseñamos que si algo falla en el medio, no debe quedar basura en la DB.
+     */
+
+
 
     private function hasEmptyFields(array $f)
     {
@@ -191,7 +243,7 @@ class AdminController extends BaseController
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 return $this->index();
             }
-            
+
             require_once __DIR__ . '/../services/MailService.php';
             $mailService = new MailService();
 
@@ -203,11 +255,23 @@ class AdminController extends BaseController
         }
     }
 
-    private function sendCompleteRegister(string $email, string $token)
+    private function sendCompleteRegister(string $email, string $token, int $role_id)
     {
         require_once __DIR__ . '/../services/MailService.php';
         $mailService = new MailService();
+        $enviado = false;
 
-        return $enviado = $mailService->sendEmailCompleteProfile($email, $token);
+        switch ($role_id) {
+            case '2':
+                $enviado = $mailService->sendEmailCompleteProfileCoach($email, $token);
+                break; 
+            case '3':
+                $enviado = $mailService->sendEmailCompleteProfileSwimmer($email, $token);
+                break;
+            default:
+                break;
+        }
+
+        return $enviado;
     }
 }
