@@ -180,6 +180,7 @@ class AdminController extends BaseController
                 $token,
                 $expires_at
             );
+
             match($role_id){
                 2 => $this->activityLog->newLog('coach_registered', ['email' => $f['email']]),
                 3 => $this->activityLog->newLog('swimmer_registered', ['email' => $f['email']] )
@@ -199,7 +200,6 @@ class AdminController extends BaseController
 
             // 3. Construimos la URL final
             $coachesUrl = $baseUrl . '/?url=home';
-
 
 
             return $this->json('success', '¡Registro completado!');
