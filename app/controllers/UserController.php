@@ -3,12 +3,14 @@ require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
 require_once __DIR__ . '/../models/Coach.php';
+require_once __DIR__ . '/../utils/SaveActivityLog.php';
 
 class UserController extends BaseController
 {
     private $userModel;
     private $profileModel;
     private $coachModel;
+    private $activityLog;
     private $pdo;
 
     public function __construct()
@@ -24,6 +26,7 @@ class UserController extends BaseController
         $this->userModel = new User($pdo);
         $this->profileModel = new Profile($pdo);
         $this->coachModel = new Coach($pdo);
+        $this->activityLog = new SaveActivityLog($pdo);
     }
 
     // --- SECCIÓN: VISTAS Y LISTADOS ---
@@ -185,6 +188,9 @@ class UserController extends BaseController
             $this->coachModel->updatePasswordWhenSaveProfile($hashedPassword, $user_id);
             $this->userModel->setProfileCreatedTrueByUserId($user_id);
             $this->userModel->setTokenToExpired($token_id);
+
+            $this->activityLog->newLog('profile_completed', ['name' => $f['first_name'] . " " . $f['last_name']]);
+               
 
             $this->pdo->commit();
 

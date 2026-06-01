@@ -2,12 +2,13 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
+require_once __DIR__ . '/../utils/SaveActivityLog.php';
 
 class AdminController extends BaseController
 {
     private $pdo;
     private User $userModel;
-    private $profileModel;
+    private $activityLog;
 
     public function __construct()
     {
@@ -18,7 +19,7 @@ class AdminController extends BaseController
         global $pdo;
         $this->pdo = $pdo;
         $this->userModel = new User($pdo);
-        $this->profileModel = new Profile($pdo);
+        $this->activityLog = new SaveActivityLog($pdo);
     }
 
     
@@ -179,10 +180,12 @@ class AdminController extends BaseController
                 $token,
                 $expires_at
             );
-
+            match($role_id){
+                2 => $this->activityLog->newLog('coach_registered', ['email' => $f['email']]),
+                3 => $this->activityLog->newLog('swimmer_registered', ['email' => $f['email']] )
+                };
 
             $this->sendCompleteRegister($email, $token, $role_id);
-
 
             $this->pdo->commit();
 
@@ -199,7 +202,7 @@ class AdminController extends BaseController
 
 
 
-            return $this->json('success', implode(",", $f) . " userid: " . $userId, $coachesUrl);
+            return $this->json('success', '¡Registro completado!');
         } catch (Exception $e) {
             if ($this->pdo->inTransaction()) $this->pdo->rollBack();
 
