@@ -4,6 +4,8 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
+require_once __DIR__ . '/../utils/SaveActivityLog.php';
+
 class HomeController extends BaseController {
     /**
      * Muestra el panel principal.
@@ -12,6 +14,7 @@ class HomeController extends BaseController {
      */
     private $userModel;
     private $profileModel;
+    private $activityLog;
     private $pdo;
 
     public function __construct() {
@@ -25,6 +28,7 @@ class HomeController extends BaseController {
         // Inicializamos los modelos pasándoles la conexión única
         $this->userModel = new User( $pdo );
         $this->profileModel = new Profile( $pdo );
+        $this->activityLog = new SaveActivityLog($pdo);
     }
 
     public function index() {
@@ -45,10 +49,13 @@ class HomeController extends BaseController {
                 $activeAlumns = $this->userModel->getCountByRole(3);
                 $activeCoaches = $this->userModel->getCountByRole(2);
                 $usersCount = $this->userModel->getUsersCount();
+                
+                $recentActivityLog = $this->activityLog->getLast5ActivityLogC();
 
                 $data['active_alumns'] = $activeAlumns;
                 $data['total_users'] = $usersCount;
                 $data['active_coaches'] = $activeCoaches;
+                $data['activity_log'] = $recentActivityLog;
 
                 $this->render('administrator/home.view', $data);
                 break;

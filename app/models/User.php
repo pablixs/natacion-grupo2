@@ -177,7 +177,7 @@ class User
 
     public function getUsersCount()
     {
-        $sql = "SELECT COUNT(DISTINCT u.id) as usuarios FROM users u";
+        $sql = "SELECT COUNT(DISTINCT u.id) as usuarios FROM users u WHERE role_id <> 1";
 
         $stmt = $this->db->query($sql);
 
