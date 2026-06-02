@@ -1,16 +1,31 @@
-<?php 
+<?php
 include __DIR__ . '/../administrator/layout/header.php'; 
 /* Se declara la variable y el tipo para que intelephense no marque error de variable no definida */
 /** @var string $name */
 /** @var int $active_alumns */
 /** @var int $active_coaches */
 /** @var int $total_users */
+/** @var array $activity_log */
+
+function timeAgo(string $ts)
+{
+    date_default_timezone_set('America/Argentina/Buenos_Aires');
+    $diff = time() - strtotime($ts);
+
+
+    return match (true) {
+        $diff < 60 => 'hace ' . $diff . 's',
+        $diff < 3600 => 'hace ' . floor($diff / 60) . 'm',
+        $diff < 86400 => 'hace ' . floor($diff / 3600) . 'hs',
+        default => date('d/m H:i', strtotime($ts))
+    };
+}
 ?>
 
 <div class="p-3 p-md-4 p-lg-5 rounded ">
     <div class="row justify-content-center mx-lg-5 py-4 px-lg-4">
         <div class="col-12">
-            
+
             <h4 class="mb-3 mb-md-4">Bienvenido, <?= htmlspecialchars($name) ?></h4>
 
             <div class="row g-3 g-md-4">
@@ -18,7 +33,7 @@ include __DIR__ . '/../administrator/layout/header.php';
                     <div class="card border-0 shadow-sm mb-3 mb-lg-4">
                         <div class="card-body">
                             <h6 class="text-muted mb-3">Resumen</h6>
-                            <a href="?url=?" class="text-decoration-none">
+                            <a href="#" class="text-decoration-none">
                                 <div class="d-flex align-items-center p-2 rounded stat-card mb-2">
                                     <div class="bg-primary bg-opacity-10 p-2 rounded me-3">
                                         <i class="fa-solid fa-users text-primary"></i>
@@ -83,17 +98,39 @@ include __DIR__ . '/../administrator/layout/header.php';
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-hover table-sm mb-0">
+
                                     <tbody>
-                                        <tr class="activity-item">
-                                            <td class="ps-2 ps-md-3">
-                                                <span class="badge bg-success bg-opacity-10 text-success p-1 p-md-2 rounded-circle me-2">
-                                                    <i class="fa-solid fa-user-plus"></i>
-                                                </span>
-                                                <small><strong>María García</strong> se inscribió en <strong>Nivel Inicial</strong></small>
-                                            </td>
-                                            <td class="text-end pe-2 pe-md-3"><small class="text-muted">31/05 14:30</small></td>
-                                        </tr>
-                                        <tr class="activity-item">
+                                        <?php foreach ($activity_log as $log): ?>
+                                            <tr class="activity-item">
+                                                <td class="ps-2 ps-md-3">
+                                                    <?php switch ($log['type']):
+                                                        case 'coach_registered': ?>
+                                                            <span class="badge bg-success bg-opacity-10 text-success p-1 p-md-2 rounded-circle me-2">
+                                                                <i class="fa-solid fa-user-plus"></i>
+                                                            </span>
+                                                            <small>Se dió de alta el correo <strong><?= htmlspecialchars($log['subject']) ?></strong> con perfil de <strong>Profesor</strong></small>
+                                                            <?php break; ?>
+                                                        <?php
+                                                        case 'swimmer_registered': ?>
+                                                            <span class="badge bg-primary bg-opacity-10 text-primary p-1 p-md-2 rounded-circle me-2">
+                                                                <i class="fa-solid fa-user-plus"></i>
+                                                            </span>
+                                                            <small>Se dió de alta el correo <strong><?= htmlspecialchars($log['subject']) ?></strong> con perfil de <strong>Alumno</strong></small>
+                                                            <?php break; ?>
+                                                        <?php
+                                                        case 'profile_completed': ?>
+                                                            <span class="badge bg-warning bg-opacity-10 text-warning p-1 p-md-2 rounded-circle me-2">
+                                                                <i class="fa-solid fa-clipboard-check"></i>
+                                                            </span>
+                                                            <small><strong><?= htmlspecialchars($log['subject']) ?></strong> completó el registro de su perfil</small>
+                                                            <?php break; ?>
+                                                    <?php endswitch; ?>
+                                                </td>
+                                                <td class="text-end pe-2 pe-md-3"><small class="text-muted"><?= timeAgo($log['ts']) ?></small></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                        <!-- Alumno -->
+                                        <!-- <tr class="activity-item">
                                             <td class="ps-2 ps-md-3">
                                                 <span class="badge bg-primary bg-opacity-10 text-primary p-1 p-md-2 rounded-circle me-2">
                                                     <i class="fa-solid fa-user-plus"></i>
@@ -101,7 +138,8 @@ include __DIR__ . '/../administrator/layout/header.php';
                                                 <small>Se dio de alta a <strong>Carlos López</strong> como alumno</small>
                                             </td>
                                             <td class="text-end pe-2 pe-md-3"><small class="text-muted">31/05 13:45</small></td>
-                                        </tr>
+                                        </tr> -->
+<!-- 
                                         <tr class="activity-item">
                                             <td class="ps-2 ps-md-3">
                                                 <span class="badge bg-warning bg-opacity-10 text-warning p-1 p-md-2 rounded-circle me-2">
@@ -110,8 +148,9 @@ include __DIR__ . '/../administrator/layout/header.php';
                                                 <small><strong>Ana Martínez</strong> completó su registro</small>
                                             </td>
                                             <td class="text-end pe-2 pe-md-3"><small class="text-muted">31/05 11:20</small></td>
-                                        </tr>
-                                        <tr class="activity-item">
+                                        </tr> -->
+
+                                        <!-- <tr class="activity-item">
                                             <td class="ps-2 ps-md-3">
                                                 <span class="badge bg-info bg-opacity-10 text-info p-1 p-md-2 rounded-circle me-2">
                                                     <i class="fa-solid fa-chalkboard-user"></i>
@@ -119,8 +158,10 @@ include __DIR__ . '/../administrator/layout/header.php';
                                                 <small>Se dio de alta a <strong>Juan Pérez</strong> como profesor</small>
                                             </td>
                                             <td class="text-end pe-2 pe-md-3"><small class="text-muted">30/05 16:00</small></td>
-                                        </tr>
-                                        <tr class="activity-item">
+                                        </tr> -->
+
+                                        <!-- class -->
+                                        <!-- <tr class="activity-item">
                                             <td class="ps-2 ps-md-3">
                                                 <span class="badge bg-secondary bg-opacity-10 text-secondary p-1 p-md-2 rounded-circle me-2">
                                                     <i class="fa-solid fa-calendar-plus"></i>
@@ -128,7 +169,8 @@ include __DIR__ . '/../administrator/layout/header.php';
                                                 <small>Se creó la clase <strong>Nivel Intermedio</strong></small>
                                             </td>
                                             <td class="text-end pe-2 pe-md-3"><small class="text-muted">30/05 09:15</small></td>
-                                        </tr>
+                                        </tr> -->
+
                                     </tbody>
                                 </table>
                             </div>

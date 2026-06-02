@@ -51,7 +51,6 @@ class HomeController extends BaseController {
                 $usersCount = $this->userModel->getUsersCount();
                 
                 $recentActivityLog = $this->activityLog->getLast5ActivityLogC();
-                
 
                 $data['active_alumns'] = $activeAlumns;
                 $data['total_users'] = $usersCount;

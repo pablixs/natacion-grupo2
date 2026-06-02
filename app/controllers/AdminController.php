@@ -7,7 +7,8 @@ require_once __DIR__ . '/../utils/SaveActivityLog.php';
 class AdminController extends BaseController
 {
     private $pdo;
-    private User $userModel;
+    private $userModel;
+    private $profileModel;
     private $activityLog;
 
     public function __construct()
@@ -19,6 +20,7 @@ class AdminController extends BaseController
         global $pdo;
         $this->pdo = $pdo;
         $this->userModel = new User($pdo);
+        $this->profileModel = new Profile($pdo);
         $this->activityLog = new SaveActivityLog($pdo);
     }
 
@@ -27,14 +29,16 @@ class AdminController extends BaseController
         // Solo permitimos pasar al role id 1 (admin)
         $this->checkAuth(1);
 
+        
+        $swimmers_data = $this->profileModel->getAllDataByRole(3);
+
         $data = [
             'title' => "Manage Users Dashboard",
             'user'  => $_SESSION['email'] ?? 'Guest',
             'name' => $_SESSION['first_name'] ?? 'Guest',
-            'role_id' => $_SESSION['role_id'] ?? 3
+            'role_id' => $_SESSION['role_id'] ?? 3,
+            'swimmers_data' => $swimmers_data
         ];
-
-        $data['swimmers_data'] = $this->userModel->getCountByRole(3);
 
         $this->render('administrator/swimmer/swimmers.view', $data);
     }
@@ -88,12 +92,15 @@ class AdminController extends BaseController
     {
         // Solo permitimos pasar al role id 1 (admin)
         $this->checkAuth(1);
+        $coaches_data = $this->profileModel->getAllDataByRole(2);
 
         $data = [
             'title' => "Profesores - Swimming School",
             'user'  => $_SESSION['email'] ?? 'Guest',
             'name' => $_SESSION['first_name'] ?? 'Guest',
-            'role_id' => $_SESSION['role_id'] ?? 3
+            'role_id' => $_SESSION['role_id'] ?? 3,
+            'coaches_data' => $coaches_data
+
         ];
 
         $data['coachs_data'] = $this->userModel->getCountByRole(2);
@@ -107,11 +114,13 @@ class AdminController extends BaseController
         // Solo permitimos pasar al role id 1 (admin)
         $this->checkAuth(1);
 
+        
+
         $data = [
             'title' => "Dar de alta un profesor - Swimming School",
             'user'  => $_SESSION['email'] ?? 'Guest',
             'name' => $_SESSION['first_name'] ?? 'Guest',
-            'role_id' => $_SESSION['role_id'] ?? 3
+            'role_id' => $_SESSION['role_id'] ?? 3,
         ];
 
         $this->render('administrator/coach/register-coach.view', $data);

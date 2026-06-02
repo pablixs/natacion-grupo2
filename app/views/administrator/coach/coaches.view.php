@@ -1,7 +1,7 @@
 <?php
 include __DIR__ . '/../../administrator/layout/header.php';
 /* Se declara la variable y el tipo para que intelephense no marque error de variable no definida */
-/** @var int $coachs_data */
+/** @var array $coaches_data */
 ?>
 
 <div class="bg-white p-5 rounded shadow-sm">
@@ -10,14 +10,32 @@ include __DIR__ . '/../../administrator/layout/header.php';
             <a href="?url=register-coach" class="btn btn-primary">Dar de alta profesor</a>
         </div>
 
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
-
-                <div class="card-body">
-                    <h5 class="card-title">Profesores activos</h5>
-                    <p class="card-text fs-2"><?= $coachs_data ?></p>
-                </div>
-            </div>
+         <div class="col-md-4">
+            <h2>Listado de Profesores</h2>
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($coaches_data as $s): ?>
+                        <tr>
+                            <td><?= $s['id']; ?></td>
+                            <td><?= $s['full_name'] ?></td>
+                            <td><?= $s['email']; ?></td>
+                            <td><?= $s['phone']; ?></td>
+                            <td>
+                                <button class="btn btn-sm btn-info">Editar</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
 
     </div>

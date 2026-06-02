@@ -7,20 +7,21 @@ class Profile {
         $this->db = $pdo;
     }
 
-    /**
-     * Obtiene todos los nadadores con sus correos electrónicos e imagen de perfil.
-     */
-    public function getAllByRole(int $role_id) {
-        // Agregamos s.profile_image a la consulta
-        $sql = "SELECT p.*, u.email 
-                FROM profiles p
-                INNER JOIN users u ON p.user_id = u.id 
-                WHERE p.deleted_at IS NULL AND u.role_id = $role_id";
-        
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function getAllDataByRole(int $role_id){
+        try {
+            $sql = "SELECT u.id, u.email, CONCAT(p.first_name, ' ' , p.last_name) as full_name, p.phone, p.birth_date FROM users u 
+            INNER JOIN profiles p ON u.id = p.user_id 
+            WHERE u.deleted_at IS NULL AND u.role_id = ? ";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$role_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return new PDOException('Error al obtener los perfiles: ' . $e->getMessage());
+        }
     }
 
+   
     /**
      * Inserta los datos personales vinculados a un user_id, incluyendo la imagen.
      * @param array $data ['user_id', 'first_name', 'last_name', 'phone', 'profile_image']

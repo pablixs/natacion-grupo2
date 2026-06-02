@@ -8,9 +8,13 @@ class Log {
     }
 
     public function getLast5ActivityLog(){
-        $stmt = $this->db->prepare('SELECT TOP(5) FROM activity_log ORDER BY ts desc');
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $this->db->prepare('SELECT * FROM activity_log ORDER BY ts desc LIMIT 5');
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return new PDOException('Error al obtener los logs: ' . $e->getMessage());
+        }
     }
 
     public function newActivityLog(string $type, string $subject){

@@ -19,7 +19,7 @@ class SaveActivityLog
         try {
             return $this->logModel->getLast5ActivityLog();
         } catch (\Exception $e) {
-            error_log('Hubo un error al recuperar los logs: ' . $e->getMessage());
+            return  $e->getMessage();
         }
     }
 
