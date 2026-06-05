@@ -1,5 +1,5 @@
 </main>
-<footer class="bg-dark text-white mt-auto pt-5 pb-4 mt-auto">
+<footer class="primary-bg text-white mt-auto pt-5 pb-4 mt-auto">
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4 mb-4 mb-lg-0">

@@ -248,24 +248,24 @@ class AdminController extends BaseController
         return empty($f['first_name']) || empty($f['last_name']) || empty($f['email']) || empty($f['password'] || empty($f['phone'] || empty($f['specialty'])));
     }
 
-    public function testSendEmail(string $email)
-    {
-        try {
+    // public function testSendEmail(string $email)
+    // {
+    //     try {
 
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                return $this->index();
-            }
+    //         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    //             return $this->index();
+    //         }
 
-            require_once __DIR__ . '/../services/MailService.php';
-            $mailService = new MailService();
+    //         require_once __DIR__ . '/../services/MailService.php';
+    //         $mailService = new MailService();
 
-            $enviado = $mailService->sendEmailCompleteProfile($email, $token = 'dou');
+    //         $enviado = $mailService->sendEmailCompleteProfile($email, $token = 'dou');
 
-            return $this->json('success', 'Piolita', $enviado);
-        } catch (Exception $e) {
-            return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
-        }
-    }
+    //         return $this->json('success', 'Piolita', $enviado);
+    //     } catch (Exception $e) {
+    //         return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
+    //     }
+    // }
 
     private function sendCompleteRegister(string $email, string $token, int $role_id)
     {

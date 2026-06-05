@@ -20,6 +20,7 @@ export function initResetPassword() {
              * La petición viaja al endpoint 'update-password'.
              * Es crucial que el formulario incluya el token en un <input type="hidden">.
              */
+            handleAlert("loading");
             const response = await fetch('?url=update-password', { 
                 method: 'POST', 
                 body: formData 
@@ -32,7 +33,7 @@ export function initResetPassword() {
 
         } catch (error) {
             console.error("Password Update Error:", error);
-            handleAlert('error', 'Error al intentar actualizar la contraseña.');
+            handleAlert('error', 'Error al intentar actualizar la contraseña.' . error);
         }
     });
 }

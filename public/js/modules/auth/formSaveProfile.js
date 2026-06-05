@@ -26,10 +26,9 @@ export function initSaveProfile() {
             });
 
             const text = await response.text();
-            console.log("text antes del try: ", text);
             try {
+                handleAlert("loaded");
                 const data = JSON.parse(text);
-                console.log("data antes del handleAlert: ", data);
                 // El servidor retornará el status (success, error, warning) y el mensaje
                 handleAlert(data.status, data.message, data.redirect);
             } catch (err) {

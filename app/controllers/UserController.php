@@ -266,7 +266,8 @@ class UserController extends BaseController
             $token = bin2hex(random_bytes(32));
             $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-            $this->userModel->savePasswordToken($email, $token, $expires);
+            $user_id = $user['id'];
+            $saved = $this->userModel->savePasswordToken($user_id, $email, $token, $expires);
 
             require_once __DIR__ . '/../services/MailService.php';
             $mailService = new MailService();
@@ -278,16 +279,16 @@ class UserController extends BaseController
             }
         }
 
-        return $this->json('success', 'Si el correo existe, recibirás un enlace de recuperación.', Env::get('APP_URL') . '/?url=login');
+        return $this->json('success', 'Si el correo existe, recibirás un enlace de recuperación. saved: ' . $saved, Env::get('APP_URL') . '/?url=login');
     }
 
     public function showResetForm()
     {
         $token = $_GET['token'] ?? '';
 
-        if (empty($token)) {
-            die('Error: El token de recuperación ha expirado o es inválido.');
-        }
+        if (!$this->validateToken($token)) {
+            return header('Location: ?url=login');
+        };
 
         $this->render('users/reset-password.view', [
             'title' => 'Restablecer Contraseña',
@@ -306,25 +307,30 @@ class UserController extends BaseController
 
         $resetRequest = $this->userModel->validateToken($token);
 
-        if ($resetRequest) {
-            $email = $resetRequest['email'];
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-            try {
-                $this->pdo->beginTransaction();
-
-                $this->userModel->updatePasswordByEmail($email, $hashedPassword);
-                $this->userModel->deleteToken($token);
-
-                $this->pdo->commit();
-                return $this->json('success', '¡Contraseña actualizada con éxito!', Env::get('APP_URL') . '?url=login');
-            } catch (Exception $e) {
-                if ($this->pdo->inTransaction()) $this->pdo->rollBack();
-                return $this->json('error', 'No se pudo actualizar la contraseña.');
+        try {
+            if ($resetRequest) {
+                $email = $resetRequest['email'];
+                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+    
+                try {
+                    $this->pdo->beginTransaction();
+    
+                    $this->userModel->updatePasswordByEmail($email, $hashedPassword);
+                    $this->userModel->setTokenToExpiredPassword($token);
+    
+                    $this->pdo->commit();
+                    return $this->json('success', '¡Contraseña actualizada con éxito!', Env::get('APP_URL') . '?url=login');
+                } catch (Exception $e) {
+                    if ($this->pdo->inTransaction()) $this->pdo->rollBack();
+                    return $this->json('error', 'No se pudo actualizar la contraseña.');
+                }
             }
+    
+            return $this->json('error', 'El enlace es inválido o ha expirado.');
+            //code...
+        } catch (\Throwable $th) {
+           return $this->json('error', 'error trycatch ' . $th);
         }
-
-        return $this->json('error', 'El enlace es inválido o ha expirado.');
     }
 
     public function validateToken(string $token)

@@ -159,16 +159,16 @@ class User
      * Guarda un token de recuperación, eliminando cualquier token previo del mismo email.
      */
 
-    public function savePasswordToken(string $email, string $token, string $expires)
+    public function savePasswordToken(string $user_id, string $email, string $token, string $expires)
     {
         try {
             // 1. Limpiamos registros de recuperación antiguos para este usuario
-            $stmtDel = $this->db->prepare('DELETE FROM password_resets WHERE email = ?');
-            $stmtDel->execute([$email]);
+           // $stmtDel = $this->db->prepare('DELETE FROM password_resets WHERE email = ?');
+            //$stmtDel->execute([$email]);
 
             // 2. Insertamos el nuevo token de seguridad
-            $stmtIns = $this->db->prepare('INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)');
-            return $stmtIns->execute([$email, $token, $expires]);
+            $stmtIns = $this->db->prepare('INSERT INTO password_resets (user_id, email, token, expires_at) VALUES (?, ?, ?, ?)');
+            return $stmtIns->execute([$user_id, $email, $token, $expires]);
         } catch (PDOException $e) {
             error_log('Error en savePasswordToken: ' . $e->getMessage());
             return false;
@@ -203,9 +203,12 @@ class User
      * Elimina el token una vez que ya ha sido utilizado.
      */
 
-    public function deleteToken(string $token)
+    public function setTokenToExpiredPassword(string $token)
     {
-        $stmt = $this->db->prepare('DELETE FROM password_resets WHERE token = ?');
+         $sql = "UPDATE password_resets SET expires_at = NOW() WHERE token = ?
+        ";
+
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([$token]);
     }
 }

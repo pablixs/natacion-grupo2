@@ -23,7 +23,6 @@ export function initRegisterSwimmer() {
             });
 
             const text = await response.text();
-            console.log("text antes del try: ", text);
             try {
                 handleAlert("loaded");
                 const data = JSON.parse(text);

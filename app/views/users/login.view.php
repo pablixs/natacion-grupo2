@@ -18,7 +18,10 @@
                         <button type="submit" class="btn btn-success w-100">Entrar</button>
                     </form>
 
-                   
+                    
+                    <div class="py-2 text-center">
+                        <a class="text-justify w-100 fs-9" href="?url=forgot-password">¿Olvidaste tu contraseña?</a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -4,55 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <title><?= $title ?? 'Escuela de Natación' ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="<?= rtrim(Env::get('ASSET_URL'), '/') ?>/css/styles.css">
     <link href="<?= Env::get('ASSET_URL') ?>/css/datatables.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style>
-    .profile-img-nav {
-        width: 35px;
-        height: 35px;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 2px solid #17a2b8;
-    }
-
-    .stat-card {
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-    }
-    .class-item {
-        transition: all 0.2s ease;
-        border-left: 3px solid transparent;
-    }
-    .class-item:hover {
-        background-color: #f8f9fa;
-        border-left-color: #0dcaf0;
-    }
-    .quick-btn {
-        transition: all 0.2s ease;
-    }
-    .quick-btn:hover {
-        transform: translateY(-2px);
-    }
-    .activity-item {
-        transition: background-color 0.2s ease;
-    }
-    .activity-item:hover {
-        background-color: #f8f9fa;
-    }
-    </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark primary-bg">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="?url=home">
                 
