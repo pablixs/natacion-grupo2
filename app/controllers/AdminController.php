@@ -2,13 +2,16 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
+require_once __DIR__ . '/../models/Class.php';
 require_once __DIR__ . '/../utils/SaveActivityLog.php';
+
 
 class AdminController extends BaseController
 {
     private $pdo;
     private $userModel;
     private $profileModel;
+    private $classModel;
     private $activityLog;
 
     public function __construct()
@@ -21,9 +24,76 @@ class AdminController extends BaseController
         $this->pdo = $pdo;
         $this->userModel = new User($pdo);
         $this->profileModel = new Profile($pdo);
+        $this->classModel = new ClassModel($pdo);
         $this->activityLog = new SaveActivityLog($pdo);
     }
 
+
+    public function newClassPost(){
+        $this->checkAuth(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return http_response_code(405);
+        }
+
+        // // 1. Recolección y Sanitización ( Evitamos espacios vacíos y basura )
+
+        
+
+        $fields = [
+            'coach_id' => trim($_POST['coach_id'] ?? ''),
+            'level' => trim($_POST['level'] ?? ''),
+            'specialities' =>  $_POST['specialities'],
+            'first_day_of_week' => trim($_POST['first_day_of_week'] ?? ''),
+            'second_day_of_week' => trim($_POST['second_day_of_week'] ?? null),
+            'start_time' => trim($_POST['start_time'] ?? ''),
+            'end_time' => trim($_POST['end_time'] ?? ''),
+            'capacity' => trim($_POST['capacity'] ?? ''),
+            'active' => $_POST['active'] ?? 1,
+
+        ];
+
+        // $days = [
+        //     "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"
+        // ];
+
+        // $specialities = ["Pecho", "Crol", "Espalda", "Mariposa"];
+
+
+        // if (empty($fields['coach_id']) || empty($fields['level']) || empty($fields['specialities']) || empty($fields['first_day_of_week']) || empty($fields['start_time']) || empty($fields['end_time']) || empty($fields['capacity'])) {
+        //         return $this->json('warning', 'Faltan datos obligatorios.');
+        // }
+
+        // if(!in_array($fields['specialities'], $specialities)){
+        //     return $this->json('error', 'Especialidad no válida.');
+        // }
+
+        // if(!in_array($fields['first_day_of_week'], $days)){
+        //     return $this->json('error', 'Primer día de la semana no válido.');
+        // }
+
+        // if(!is_null($fields['second_day_of_week']) && !in_array($fields['second_day_of_week'], $days)){
+        //     return $this->json('error', 'Segundo día de la semana no válido.');
+        // }
+
+        // try {
+        //     $created = $this->classModel->createClass($fields);
+
+        //     if (!$created) {
+        //         return $this->json('error', 'No se pudo crear la clase.');
+        //     }
+
+        //     // $this->activityLog->newLog('class_created', ['coach_id' => $fields['coach_id'], 'level' => $fields['level']]);
+        //     return $this->json('success', '¡Clase creada! - debug: ' . json_encode($fields) . ' - created: ' . json_encode($created) );
+        // } catch (Exception $e) {
+        //     return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
+        // }
+
+         return $this->json('success', '¡Clase creada! - debug: ' . json_encode($fields) . ' - created: '  );
+
+
+
+    }
     
     public function swimmersView(){
         // Solo permitimos pasar al role id 1 (admin)

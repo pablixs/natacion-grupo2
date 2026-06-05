@@ -7,7 +7,7 @@ include __DIR__ . '/../users/layout/header.php';
 /** @var int $coachs_data */
 ?>
 
-<div class="container mt-5">
+<div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
