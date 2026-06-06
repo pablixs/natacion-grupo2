@@ -101,7 +101,7 @@
 
                                 <div class="col-12 mt-3">
                                     <button type="submit" class="btn-submit">
-                                        <i class="fa-solid fa-plus me-2"></i>Crear Clase
+                                       </i>Crear Clase
                                     </button>
                                 </div>
 

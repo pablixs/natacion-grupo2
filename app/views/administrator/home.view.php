@@ -4,8 +4,9 @@ include __DIR__ . '/../administrator/layout/header.php';
 /** @var string $name */
 /** @var int $active_alumns */
 /** @var int $active_coaches */
-/** @var int $total_users */
 /** @var array $activity_log */
+/** @var int $total_users */
+/** */
 
 function timeAgo(string $ts)
 {

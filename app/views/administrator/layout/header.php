@@ -54,8 +54,8 @@
                             <span class="d-none d-lg-inline text-white"><?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <!-- <li><a class="dropdown-item" href="#">Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li> -->
                             <li><a class="dropdown-item text-danger" href="?url=logout">Cerrar Sesión</a></li>
                         </ul>
                     </li>

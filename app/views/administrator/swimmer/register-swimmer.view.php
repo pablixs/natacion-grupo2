@@ -6,7 +6,7 @@ include __DIR__ . '/../../administrator/layout/header.php';
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header form-card-header text-white">
                     <h4 class="mb-0 text-center">Dar de alta nuevo alumno</h4>
                 </div>
                 <div class="card-body">
@@ -26,7 +26,7 @@ include __DIR__ . '/../../administrator/layout/header.php';
 
                         <div class="row mt-3">
                             <div class="col-12 text-center">
-                                <button type="submit" class="btn btn-primary px-5">Registrar alumno</button>
+                                <button type="submit" class="btn-submit">Registrar alumno</button>
                             </div>
                         </div>
                     </form>
