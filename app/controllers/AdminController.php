@@ -2,13 +2,16 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
+require_once __DIR__ . '/../models/Class.php';
 require_once __DIR__ . '/../utils/SaveActivityLog.php';
+
 
 class AdminController extends BaseController
 {
     private $pdo;
     private $userModel;
     private $profileModel;
+    private $classModel;
     private $activityLog;
 
     public function __construct()
@@ -21,15 +24,131 @@ class AdminController extends BaseController
         $this->pdo = $pdo;
         $this->userModel = new User($pdo);
         $this->profileModel = new Profile($pdo);
+        $this->classModel = new ClassModel($pdo);
         $this->activityLog = new SaveActivityLog($pdo);
     }
 
-    
-    public function swimmersView(){
+    public function newLessonView(){
+         $this->checkAuth(1);
+
+
+         $coaches = $this->profileModel->getAllDataByRole(2);
+         $specialties = $this->classModel->getSpecialties();
+
+        $data = [
+            'title' => "Manage Users Dashboard",
+            'user'  => $_SESSION['email'] ?? 'Guest',
+            'name' => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 1,
+            'coaches' => $coaches,
+            'specialties' => $specialties
+        ];
+
+
+
+        $this->render('administrator/new-lesson.view', $data);
+    }
+
+
+
+    public function manageLessonsView(){
+         $this->checkAuth(1);
+
+
+         $lessons = $this->classModel->getLessons();
+
+        $data = [
+            'title' => "Manage Users Dashboard",
+            'user'  => $_SESSION['email'] ?? 'Guest',
+            'name' => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 1,
+            'lessons' => $lessons
+        ];
+
+
+
+        $this->render('administrator/manage-lessons.view', $data);
+    }
+
+    public function newLessonPost()
+    {
+        $this->checkAuth(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return http_response_code(405);
+        }
+
+        // // 1. Recolección y Sanitización ( Evitamos espacios vacíos y basura )
+
+
+
+        $fields = [
+            'coach_id' => trim($_POST['coach_id'] ?? ''),
+            'level' => trim($_POST['level'] ?? ''),
+            'specialties' =>  $_POST['specialties'],
+            'first_day_of_week' => trim($_POST['first_day_of_week'] ?? ''),
+            'second_day_of_week' => trim($_POST['second_day_of_week'] ?? null),
+            'start_time' => trim($_POST['start_time'] ?? ''),
+            'end_time' => trim($_POST['end_time'] ?? ''),
+            'capacity' => trim($_POST['capacity'] ?? ''),
+            'active' => $_POST['active'] ?? 1,
+
+        ];
+
+        $days = [
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado"
+        ];
+
+        $levels = [
+            "Principiante",
+            "Intermedio",
+            "Avanzado"
+        ];
+
+
+        if (empty($fields['coach_id']) || empty($fields['level']) || empty($fields['specialties']) || empty($fields['first_day_of_week']) || empty($fields['start_time']) || empty($fields['end_time']) || empty($fields['capacity'])) {
+            return $this->json('warning', 'Faltan datos obligatorios.');
+        }
+
+        if (!in_array($fields['level'], $levels)) {
+            return $this->json('error', 'Nivel no válido.');
+        }
+
+        if (!in_array($fields['first_day_of_week'], $days)) {
+            return $this->json('error', 'Primer día de la semana no válido.');
+        }
+
+        if (!is_null($fields['second_day_of_week']) && !in_array($fields['second_day_of_week'], $days)) {
+            return $this->json('error', 'Segundo día de la semana no válido.');
+        }
+
+        try {
+            $created = $this->classModel->createClass($fields);
+
+            if (!$created) {
+                return $this->json('error', 'No se pudo crear la clase.');
+            }
+
+            // $this->activityLog->newLog('class_created', ['coach_id' => $fields['coach_id'], 'level' => $fields['level']]);
+            return $this->json('success', '¡Clase creada! - debug: ' . json_encode($fields) . ' - created: ' . json_encode($created));
+        } catch (Exception $e) {
+            return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
+        }
+
+        return $this->json('success', '¡Clase creada! - debug: ' . json_encode($fields) . ' - created: ');
+    }
+
+    public function swimmersView()
+    {
         // Solo permitimos pasar al role id 1 (admin)
         $this->checkAuth(1);
 
-        
+
         $swimmers_data = $this->profileModel->getAllDataByRole(3);
 
         $data = [
@@ -114,7 +233,7 @@ class AdminController extends BaseController
         // Solo permitimos pasar al role id 1 (admin)
         $this->checkAuth(1);
 
-        
+
 
         $data = [
             'title' => "Dar de alta un profesor - Swimming School",
@@ -154,7 +273,8 @@ class AdminController extends BaseController
         return $this->executeRegistration($fields);
     }
 
-    private function executeRegistration(array $f){
+    private function executeRegistration(array $f)
+    {
         $this->checkAuth(1);
 
         try {
@@ -190,10 +310,10 @@ class AdminController extends BaseController
                 $expires_at
             );
 
-            match($role_id){
+            match ($role_id) {
                 2 => $this->activityLog->newLog('coach_registered', ['email' => $f['email']]),
-                3 => $this->activityLog->newLog('swimmer_registered', ['email' => $f['email']] )
-                };
+                3 => $this->activityLog->newLog('swimmer_registered', ['email' => $f['email']])
+            };
 
             $this->sendCompleteRegister($email, $token, $role_id);
 
@@ -219,7 +339,7 @@ class AdminController extends BaseController
         }
     }
 
-    
+
 
     public function getUsersAndProfiles()
     {
@@ -248,24 +368,24 @@ class AdminController extends BaseController
         return empty($f['first_name']) || empty($f['last_name']) || empty($f['email']) || empty($f['password'] || empty($f['phone'] || empty($f['specialty'])));
     }
 
-    public function testSendEmail(string $email)
-    {
-        try {
+    // public function testSendEmail(string $email)
+    // {
+    //     try {
 
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                return $this->index();
-            }
+    //         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    //             return $this->index();
+    //         }
 
-            require_once __DIR__ . '/../services/MailService.php';
-            $mailService = new MailService();
+    //         require_once __DIR__ . '/../services/MailService.php';
+    //         $mailService = new MailService();
 
-            $enviado = $mailService->sendEmailCompleteProfile($email, $token = 'dou');
+    //         $enviado = $mailService->sendEmailCompleteProfile($email, $token = 'dou');
 
-            return $this->json('success', 'Piolita', $enviado);
-        } catch (Exception $e) {
-            return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
-        }
-    }
+    //         return $this->json('success', 'Piolita', $enviado);
+    //     } catch (Exception $e) {
+    //         return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
+    //     }
+    // }
 
     private function sendCompleteRegister(string $email, string $token, int $role_id)
     {
@@ -276,7 +396,7 @@ class AdminController extends BaseController
         switch ($role_id) {
             case '2':
                 $enviado = $mailService->sendEmailCompleteProfileCoach($email, $token);
-                break; 
+                break;
             case '3':
                 $enviado = $mailService->sendEmailCompleteProfileSwimmer($email, $token);
                 break;

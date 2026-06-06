@@ -30,7 +30,7 @@ class SaveActivityLog
             'swimmer_registered' => [$type, $data['email']],
             'profile_completed'  => [$type, $data['name']],
             // 'swimmer_enrolled'   => [$type, $data['name'] . '|' . $data['class']],
-            // 'class_created'      => [$type, $data['class_name']],
+            'class_created'      => [$type, $data['class_name']],
             default => throw new \InvalidArgumentException("Tipo desconocido: $type")
         };
     }

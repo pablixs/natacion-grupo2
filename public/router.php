@@ -60,7 +60,17 @@ switch ( $route ) {
         if($route === 'complete-register') $controller->completeRegistrationView();
         if($route === 'save-profile') $controller->completeRegistrationPost();
     break;
-    
+
+    // Rutas de swimmers
+
+    case 'lesson-enroll':
+    case 'lessons-history':
+        require_once __DIR__ . '/../app/controllers/SwimmerController.php';
+        $controller = new SwimmerController();
+
+        if($route === 'lesson-enroll') $controller->enrollLessonView();
+        if($route === 'lessons-history') $controller->lessonsHistoryView();
+    break;
     // Rutas de admin
     case 'coaches':
     case 'register-coach': // Vista del form de registro 
@@ -68,7 +78,10 @@ switch ( $route ) {
     case 'swimmers':
     case 'register-swimmer':
     case 'create-swimmer':
-    case 'test-mail':
+    case 'manage-lessons':
+    case 'new-lesson': // Vista del form de creación de clase
+    case 'create-lesson': // POST para la creación de la clase
+    // case 'test-mail':
 
     //test
     // case 'manage-users-get':
@@ -85,10 +98,14 @@ switch ( $route ) {
         if($route === 'create-swimmer') $controller->registerSwimmerPost();  // POST para crear el swimmer
 
 
-        if($route === 'test-mail') $controller->testSendEmail('cristiandaniiel3@gmail.com');
+        // if($route === 'test-mail') $controller->testSendEmail('cristiandaniiel3@gmail.com');
 
         if($route === 'manage-users-get') $controller->getUsersAndProfiles();
 
+        
+        if($route === 'manage-lessons') $controller->manageLessonsView();
+        if($route === 'new-lesson') $controller->newLessonView();
+        if($route === 'create-lesson') $controller->newLessonPost();
 
     break;
 
@@ -96,6 +113,8 @@ switch ( $route ) {
 
     
     //break;
+
+
 
     // --- SEGURIDAD: CIERRE DE SESIÓN ---
     case 'logout':
