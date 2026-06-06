@@ -7,7 +7,7 @@ include __DIR__ . '/../../administrator/layout/header.php';
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0 text-center"><?php echo $title ?? 'Registro de Swimmer'; ?></h4>
+                    <h4 class="mb-0 text-center">Dar de alta nuevo profesor</h4>
                 </div>
                 <div class="card-body">
                     <form id="formRegisterCoach" action="?url=create-coach" method="POST" enctype="multipart/form-data">

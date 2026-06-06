@@ -2,7 +2,7 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title><?= $title ?? 'Escuela de Natación' ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -29,7 +29,7 @@
                         <a class="nav-link active" href="?url=home">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Clases</a>
+                        <a class="nav-link" href="?url=manage-lessons">Clases</a>
                     </li>
                     <?php if(isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">

@@ -81,7 +81,7 @@ function timeAgo(string $ts)
                                     <i class="fa-solid fa-person-chalkboard me-2"></i>
                                     Registrar Profesor
                                 </a>
-                                <a href="#" class="btn btn-outline-warning btn-sm quick-btn">
+                                <a href="?url=new-lesson" class="btn btn-outline-warning btn-sm quick-btn">
                                     <i class="fa-solid fa-calendar-plus me-2"></i>
                                     Nueva Clase
                                 </a>
@@ -177,7 +177,7 @@ function timeAgo(string $ts)
                         </div>
                     </div>
 
-                    <div class="card border-0 shadow-sm">
+                    <!-- <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white py-2 py-md-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
                             <h6 class="mb-0">Próximas Clases</h6>
                             <a href="#" class="text-decoration-none text-primary small">Ver todas <i class="fa-solid fa-arrow-right ms-1"></i></a>
@@ -227,7 +227,7 @@ function timeAgo(string $ts)
                                 </table>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

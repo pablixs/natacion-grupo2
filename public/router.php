@@ -78,8 +78,9 @@ switch ( $route ) {
     case 'swimmers':
     case 'register-swimmer':
     case 'create-swimmer':
-    case 'new-class': // Vista del form de creación de clase
-    case 'create-class': // POST para la creación de la clase
+    case 'manage-lessons':
+    case 'new-lesson': // Vista del form de creación de clase
+    case 'create-lesson': // POST para la creación de la clase
     // case 'test-mail':
 
     //test
@@ -100,9 +101,11 @@ switch ( $route ) {
         // if($route === 'test-mail') $controller->testSendEmail('cristiandaniiel3@gmail.com');
 
         if($route === 'manage-users-get') $controller->getUsersAndProfiles();
-        // if($route === 'new-class') 
+
         
-        if($route === 'create-class') $controller->newClassPost();
+        if($route === 'manage-lessons') $controller->manageLessonsView();
+        if($route === 'new-lesson') $controller->newLessonView();
+        if($route === 'create-lesson') $controller->newLessonPost();
 
     break;
 

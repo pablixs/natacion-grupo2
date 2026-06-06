@@ -6,7 +6,7 @@ include __DIR__ . '/../users/layout/header.php';
 
   <div class="container py-4">
         <div class="row justify-content-center">
-            <div class="col-12" style="max-width: 900px;">
+            <!-- <div class="col-12" style="max-width: 900px;">
 
                 <div class="nav-section mb-4">
                     <a href="?url=home" class="nav-btn active">
@@ -128,7 +128,7 @@ include __DIR__ . '/../users/layout/header.php';
 
                 
 
-            </div>
+            </div> -->
         </div>
     </div>
 
