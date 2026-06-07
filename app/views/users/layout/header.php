@@ -30,6 +30,8 @@
                     </li>
                     <?php endif; ?>
                     <?php if (isset($_SESSION['user_id'])): ?>
+
+
                     <li class="nav-item d-flex align-items-center">
                         <?php 
                             $foto = $_SESSION['profile_image'] ?? 'default-profile.png';
@@ -41,6 +43,9 @@
                             Hola, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?>
                         </span>
                     </li>
+                    <li class="nav-item">
+    <a class="nav-link" href="?url=profile">Mi Perfil</a>
+</li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-outline-danger btn-sm ms-3" href="?url=logout">Salir</a>
                     </li>

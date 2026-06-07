@@ -47,9 +47,43 @@ class Profile {
         ]);
     }
 
-    
+// Traemos toda la info del user logueado desde base
+    public function findByUserId(int $user_id)
+{
+    $sql = "SELECT p.*, u.email, u.role_id
+            FROM profiles p
+            INNER JOIN users u ON p.user_id = u.id
+            WHERE p.user_id = ?
+            LIMIT 1";
 
-    
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([$user_id]);
 
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+// Actualizacion perfil
+public function updateProfile(array $data)
+{
+    $sql = "UPDATE profiles
+            SET first_name = ?,
+                last_name = ?,
+                phone = ?,
+                birth_date = ?,
+                specialty = ?,
+                profile_image = ?
+            WHERE user_id = ?";
+
+    $stmt = $this->db->prepare($sql);
+
+    return $stmt->execute([
+        $data['first_name'],
+        $data['last_name'],
+        $data['phone'],
+        $data['birth_date'],
+        $data['specialty'] ?? null,
+        $data['profile_image'],
+        $data['user_id']
+    ]);
+}
     
 }
