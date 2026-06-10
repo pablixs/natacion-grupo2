@@ -96,10 +96,18 @@ switch ( $route ) {
 
     break;
 
-    // Rutas de profile -> Coach
+    // Rutas de clases e inscripciones
+    case 'lessons':
+    case 'enroll-lesson':
 
-    
-    //break;
+        require_once __DIR__ . '/../app/controllers/LessonController.php';
+        $controller = new LessonController();
+
+        if ($route === 'lessons') $controller->available();
+        if ($route === 'enroll-lesson') $controller->enroll();
+
+    break;
+  
 
     // --- SEGURIDAD: CIERRE DE SESIÓN ---
     case 'logout':

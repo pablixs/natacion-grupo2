@@ -12,9 +12,15 @@ include __DIR__ . '/users/layout/header.php';
             <div class="card text-white bg-primary mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Clases activas</h5>
-                    <p class="card-text fs-2">...</p>
+                    <p class="card-text fs-2">
+                        <?= $totalBookings ?? 0 ?>
+                    </p>
                 </div>
             </div>
+   <a href="?url=lessons" class="btn btn-success w-100">
+                Ver clases disponibles
+            </a>
+
         </div>
     </div>
 </div>

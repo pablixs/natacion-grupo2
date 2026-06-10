@@ -4,7 +4,9 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
-class HomeController extends BaseController {
+require_once __DIR__ . '/../models/Booking.php';
+class HomeController extends BaseController
+{
     /**
      * Muestra el panel principal.
      * Ahora usa el motor de renderizado heredado de BaseController
@@ -14,23 +16,25 @@ class HomeController extends BaseController {
     private $profileModel;
     private $pdo;
 
-    public function __construct() {
+    public function __construct()
+    {
         /** * Usamos 'global $pdo' porque la conexión se crea en otro archivo ( ej. index o database ).
-        * Sin esto, el controlador no tendría acceso al objeto de conexión PDO para pasárselo a los modelos.
-        * Es una forma de 'inyectar' la base de datos sin volver a conectarse en cada clase.
-        */
+         * Sin esto, el controlador no tendría acceso al objeto de conexión PDO para pasárselo a los modelos.
+         * Es una forma de 'inyectar' la base de datos sin volver a conectarse en cada clase.
+         */
         global $pdo;
         $this->pdo = $pdo;
 
         // Inicializamos los modelos pasándoles la conexión única
-        $this->userModel = new User( $pdo );
-        $this->profileModel = new Profile( $pdo );
+        $this->userModel = new User($pdo);
+        $this->profileModel = new Profile($pdo);
     }
 
-    public function index() {
+    public function index()
+    {
         // Verificamos si el usuario está logueado antes de mostrar el panel
         $this->checkAuth();
-        
+
         $data = [
             'title' => "Dashboard - Swimming School",
             'user'  => $_SESSION['email'] ?? 'Guest',
@@ -39,9 +43,9 @@ class HomeController extends BaseController {
         ];
 
         // El método render busca automáticamente en /views/ y permite pasar dato
-        switch($data['role_id']){
+        switch ($data['role_id']) {
             // Caso de rol administrador
-            case 1: 
+            case 1:
                 $activeAlumns = $this->userModel->getCountByRole(3);
                 $activeCoaches = $this->userModel->getCountByRole(2);
                 $usersCount = $this->userModel->getUsersCount();
@@ -52,14 +56,18 @@ class HomeController extends BaseController {
 
                 $this->render('administrator/home.view', $data);
                 break;
-            case 2: 
-            // Caso de rol profesor/coach
+            case 2:
+                // Caso de rol profesor/coach
                 break;
-            case 3: 
-            // Caso de rol swimmer
+            case 3:
+                // Caso de rol swimmer
+                $bookingModel = new Booking($this->pdo);
+                $totalBookings = $bookingModel->countBySwimmer($_SESSION['user_id']);
+
+                $data['totalBookings'] = $totalBookings['total'];
+
                 $this->render('home.view', $data);
                 break;
         }
-        
     }
 }
