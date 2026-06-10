@@ -331,4 +331,81 @@ class UserController extends BaseController
     {
         return empty($f['first_name']) || empty($f['last_name']) || empty($f['password'] || empty($f['phone'] || empty($f['birth_date'])));
     }
+
+
+    public function profile()
+{
+    $this->checkAuth();
+
+    $userId = $_SESSION['user_id'];
+
+    $profile = $this->profileModel->findByUserId($userId);
+
+    $this->render('users/profile.view', [
+        'title' => 'Mi Perfil',
+        'profile' => $profile
+    ]);
+}
+
+
+//Actualizacion perfil user
+public function updateProfile()
+{
+    $this->checkAuth();
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return header('Location: ?url=profile');
+    }
+
+    $userId = $_SESSION['user_id'];
+
+    $currentProfile = $this->profileModel->findByUserId($userId);
+
+    $fields = [
+        'user_id' => $userId,
+        'first_name' => trim($_POST['nombre'] ?? ''),
+        'last_name' => trim($_POST['apellido'] ?? ''),
+        'phone' => trim($_POST['telefono'] ?? ''),
+        'birth_date' => trim($_POST['birth_date'] ?? ''),
+        'specialty' => $_POST['especialidad'] ?? null,
+        'profile_image' => $currentProfile['profile_image'] ?? 'default-profile.png'
+    ];
+
+    if (empty($fields['first_name']) || empty($fields['last_name']) || empty($fields['phone']) || empty($fields['birth_date'])) {
+        return $this->json('warning', 'Faltan datos obligatorios.');
+    }
+
+    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/../../public/img/uploads/profiles/swimmers/';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $extension = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (in_array($extension, $allowed)) {
+            $newFileName = 'profile_' . $userId . '_' . time() . '.' . $extension;
+            $absolutePath = $uploadDir . $newFileName;
+
+            if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $absolutePath)) {
+                $fields['profile_image'] = $newFileName;
+            }
+        }
+    }
+
+    try {
+        $this->profileModel->updateProfile($fields);
+
+        $_SESSION['first_name'] = $fields['first_name'];
+        $_SESSION['profile_image'] = $fields['profile_image'];
+
+        return $this->json('success', 'Perfil actualizado correctamente.', Env::get('APP_URL') . '/?url=profile');
+    } catch (Exception $e) {
+        return $this->json('error', 'No se pudo actualizar el perfil.');
+    }
+}
+
+
 }

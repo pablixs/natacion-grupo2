@@ -42,6 +42,8 @@ switch ( $route ) {
     case 'login':
     case 'complete-register':
     case 'save-profile':
+    case 'profile':
+    case 'update-profile':
  
         require_once __DIR__ . '/../app/controllers/UserController.php';
         $controller = new UserController();
@@ -59,6 +61,8 @@ switch ( $route ) {
         
         if($route === 'complete-register') $controller->completeRegistrationView();
         if($route === 'save-profile') $controller->completeRegistrationPost();
+        if ($route === 'profile') $controller->profile();
+        if ($route === 'update-profile') $controller->updateProfile();
     break;
     
     // Rutas de admin
