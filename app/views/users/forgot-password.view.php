@@ -24,7 +24,7 @@
                                 required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-2">
+                        <button type="submit" class="btn-submit-form w-100 mb-3">
                             Enviar enlace de recuperación
                         </button>
 

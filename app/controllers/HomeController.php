@@ -64,7 +64,7 @@ class HomeController extends BaseController {
                 break;
             case 3: 
             // Caso de rol swimmer
-                $this->render('swimmer/home.view', $data);
+                $this->render('swimmer/lessons.view', $data);
                 break;
         }
         

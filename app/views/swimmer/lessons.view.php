@@ -1,39 +1,34 @@
-<?php include __DIR__ . '/../swimmer/layout/header.php';
+<?php
+include __DIR__ . '/../swimmer/layout/header.php';
 /** @var array $lessons */
-
 ?>
 
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-12" style="max-width: 900px;">
+
             <div class="nav-section mb-4">
-                <a href="?url=home" class="nav-btn">
+                <a href="?url=home" class="nav-btn ">
                     <i class="fa-solid fa-house"></i>Home
                 </a>
-                <a href="?url=lessons" class="nav-btn">
+                <a href="?url=lessons" class="nav-btn active">
                     <i class="fa-solid fa-water"></i>Mis Clases
                 </a>
-                <a href="?url=lesson-enroll" class="nav-btn active">
+                <a href="?url=lesson-enroll" class="nav-btn">
                     <i class="fa-solid fa-plus-circle"></i>Inscribirme
                 </a>
- 
+
             </div>
+
             <?php
-            $disponibles = [];
-            $sinCupo = [];
-            $yaInscripto = [];
+            $activas = [];
+            $canceladas = [];
 
             foreach ($lessons as $lesson) {
-                list($enrolled_count, $max_capacity) = explode('/', $lesson['capacity']);
-                $lesson['enrolled_count'] = (int)$enrolled_count;
-                $lesson['max_capacity'] = (int)$max_capacity;
-
-                if ($lesson['is_enrolled']) {
-                    $yaInscripto[] = $lesson;
-                } elseif ($lesson['enrolled_count'] >= $lesson['max_capacity']) {
-                    $sinCupo[] = $lesson;
-                } elseif ($lesson['active']) {
-                    $disponibles[] = $lesson;
+                if ($lesson['active']) {
+                    $activas[] = $lesson;
+                } else {
+                    $canceladas[] = $lesson;
                 }
             }
 
@@ -61,16 +56,16 @@
             }
             ?>
 
-            <?php if (count($disponibles) > 0): ?>
-                <div class="section-label">Disponibles</div>
+            <?php if (count($activas) > 0): ?>
+                <div class="section-label">Activa</div>
                 <div class="row g-4 mb-4">
-                    <?php foreach ($disponibles as $lesson): ?>
+                    <?php foreach ($activas as $lesson): ?>
                         <?php $color = getLevelColor($lesson['level']); ?>
                         <?php $especialidades = explode(', ', $lesson['especialidades']); ?>
 
                         <div class="col-md-6">
                             <div class="card class-card h-100">
-                                <div class="card-body d-flex flex-column">
+                                <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div class="d-flex align-items-center gap-3">
                                             <div class="level-icon bg-<?= $color['class'] ?> bg-opacity-10">
@@ -102,42 +97,38 @@
                                             <i class="fa-solid fa-user"></i>
                                             <span>Prof. <?= htmlspecialchars($lesson['last_name']) ?></span>
                                         </div>
-                                        <div class="info-item">
-                                            <i class="fa-solid fa-users"></i>
-                                            <span><?= $lesson['capacity'] ?> alumnos</span>
-                                        </div>
                                     </div>
 
-                                    <button class="btn-enroll w-100 mt-auto" data-bs-toggle="modal" data-bs-target="#confirmModal-<?= $lesson['register_id'] ?>">
-                                        <i class="fa-solid fa-plus me-2"></i>Inscribirme
+                                    <button class="btn-unenroll w-100" data-bs-toggle="modal" data-bs-target="#detailModal-<?= $lesson['register_id'] ?>">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>Dar de baja
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="modal fade" id="confirmModal-<?= $lesson['register_id'] ?>" tabindex="-1" aria-labelledby="confirmModalLabel-<?= $lesson['register_id'] ?>" aria-hidden="true">
+                        <div class="modal fade" id="detailModal-<?= $lesson['register_id'] ?>" tabindex="-1" aria-labelledby="detailModalLabel-<?= $lesson['register_id'] ?>" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="confirmModalLabel-<?= $lesson['register_id'] ?>">Confirmar inscripción</h5>
+                                        <h5 class="modal-title" id="detailModalLabel-<?= $lesson['register_id'] ?>">Detalle de clase</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                     </div>
-                                    <form method="POST"  data-form="enroll-lesson">
+                                    <form method="POST" action="" data-form="unenroll-lesson">
                                         <input type="hidden" name="lesson_id" value="<?= $lesson['register_id'] ?>">
                                         <input type="hidden" name="user_id" value="<?= $_SESSION['user_id'] ?>">
                                         <div class="modal-body">
-                                            <div class="modal-icon">
-                                                <i class="fa-solid fa-water"></i>
-                                            </div>
                                             <div class="modal-info">
                                                 <div class="class-name"><?= htmlspecialchars($lesson['level']) ?> — <?= htmlspecialchars($lesson['especialidades']) ?></div>
                                                 <div class="class-schedule"><?= formatDays($lesson) ?> · <?= formatTime($lesson['start_time']) ?> - <?= formatTime($lesson['end_time']) ?></div>
+                                                <div class="class-schedule">Prof. <?= htmlspecialchars($lesson['last_name']) ?></div>
                                             </div>
-                                            <p class="text-center mb-0">¿Estás seguro de que querés inscribirte en esta clase?</p>
+                                            <p class="text-center mb-0">¿Estás seguro de que querés darte de baja de esta clase?</p>
                                         </div>
                                         <div class="modal-footer justify-content-center gap-2">
                                             <button type="button" class="btn-cancel-modal" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn-confirm-modal">Inscribirme</button>
+                                            <button type="submit" class="btn-confirm-modal btn-danger-modal">
+                                                <i class="fa-solid fa-right-from-bracket me-1"></i>Dar de baja
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -148,23 +139,24 @@
                 </div>
             <?php endif; ?>
 
-            <?php if (count($sinCupo) > 0): ?>
-                <div class="section-label">Sin cupo</div>
+            <?php if (count($canceladas) > 0): ?>
+                <div class="section-label">Cancelada</div>
                 <div class="row g-4 mb-4">
-                    <?php foreach ($sinCupo as $lesson): ?>
-                        <?php $color = getLevelColor($lesson['level']); ?>
+                    <?php foreach ($canceladas as $lesson): ?>
                         <?php $especialidades = explode(', ', $lesson['especialidades']); ?>
 
                         <div class="col-md-6">
-                            <div class="card class-card h-100">
-                                <div class="card-body d-flex flex-column">
+                            <div class="card class-card h-100 cancelled">
+                                <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div class="d-flex align-items-center gap-3">
-                                            <div class="level-icon bg-<?= $color['class'] ?> bg-opacity-10">
-                                                <i class="fa-solid fa-water text-<?= $color['class'] ?> fs-5"></i>
+                                            <div class="level-icon bg-danger bg-opacity-10">
+                                                <i class="fa-solid fa-water text-danger fs-5"></i>
                                             </div>
                                             <div>
-                                                <span class="badge badge-status bg-warning text-dark mb-1">Sin cupo</span>
+                                                <span class="badge badge-status bg-danger text-white mb-1">
+                                                    <i class="fa-solid fa-xmark me-1"></i>Cancelada
+                                                </span>
                                                 <h5 class="mb-0"><?= htmlspecialchars($lesson['level']) ?></h5>
                                             </div>
                                         </div>
@@ -189,70 +181,38 @@
                                             <i class="fa-solid fa-user"></i>
                                             <span>Prof. <?= htmlspecialchars($lesson['last_name']) ?></span>
                                         </div>
-                                        <div class="info-item">
-                                            <i class="fa-solid fa-users"></i>
-                                            <span><?= $lesson['capacity'] ?> alumnos</span>
-                                        </div>
                                     </div>
 
-                                    <button class="btn-enroll w-100 mt-auto" disabled>
-                                        <i class="fa-solid fa-ban me-2"></i>Sin cupo disponible
+                                    <button class="btn-detail w-100" data-bs-toggle="modal" data-bs-target="#detailModal-<?= $lesson['register_id'] ?>">
+                                        <i class="fa-solid fa-eye me-2"></i>Ver detalle
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-
-            <?php if (count($yaInscripto) > 0): ?>
-                <div class="section-label">Ya inscripto</div>
-                <div class="row g-4 mb-4">
-                    <?php foreach ($yaInscripto as $lesson): ?>
-                        <?php $especialidades = explode(', ', $lesson['especialidades']); ?>
-
-                        <div class="col-md-6">
-                            <div class="card class-card enrolled h-100">
-                                <div class="card-body d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div class="level-icon bg-info bg-opacity-10" style="--bs-bg-opacity: 0.1;">
-                                                <i class="fa-solid fa-water fs-5" style="color: #1a3a5c;"></i>
-                                            </div>
-                                            <div>
-                                                <span class="badge badge-status text-white mb-1" style="background-color: #1a3a5c;">Ya estás inscripto</span>
-                                                <h5 class="mb-0"><?= htmlspecialchars($lesson['level']) ?></h5>
-                                            </div>
-                                        </div>
+                        <div class="modal fade" id="detailModal-<?= $lesson['register_id'] ?>" tabindex="-1" aria-labelledby="detailModalLabel-<?= $lesson['register_id'] ?>" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="detailModalLabel-<?= $lesson['register_id'] ?>">Detalle de clase</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                     </div>
-
-                                    <p class="text-muted small mb-3">
-                                        <?php foreach ($especialidades as $especialidad): ?>
-                                            <i class="fa-solid fa-star me-1"></i><?= htmlspecialchars($especialidad) ?>
-                                        <?php endforeach; ?>
-                                    </p>
-
-                                    <div class="d-flex flex-column gap-2 mb-3">
-                                        <div class="info-item">
-                                            <i class="fa-solid fa-calendar-week"></i>
-                                            <span><?= formatDays($lesson) ?></span>
+                                    <div class="modal-body">
+                                        <div class="modal-icon">
+                                            <i class="fa-solid fa-water"></i>
                                         </div>
-                                        <div class="info-item">
-                                            <i class="fa-solid fa-clock"></i>
-                                            <span><?= formatTime($lesson['start_time']) ?> - <?= formatTime($lesson['end_time']) ?></span>
+                                        <div class="modal-info">
+                                            <div class="class-name"><?= htmlspecialchars($lesson['level']) ?> — <?= htmlspecialchars($lesson['especialidades']) ?></div>
+                                            <div class="class-schedule"><?= formatDays($lesson) ?> · <?= formatTime($lesson['start_time']) ?> - <?= formatTime($lesson['end_time']) ?></div>
+                                            <div class="class-schedule">Prof. <?= htmlspecialchars($lesson['last_name']) ?></div>
                                         </div>
-                                        <div class="info-item">
-                                            <i class="fa-solid fa-user"></i>
-                                            <span>Prof. <?= htmlspecialchars($lesson['last_name']) ?></span>
-                                        </div>
-                                        <div class="info-item">
-                                            <i class="fa-solid fa-users"></i>
-                                            <span><?= $lesson['capacity'] ?> alumnos</span>
-                                        </div>
+                                        <p class="text-center text-danger mb-0">
+                                            <i class="fa-solid fa-circle-xmark me-1"></i>Esta clase fue cancelada
+                                        </p>
                                     </div>
-
-
+                                    <div class="modal-footer justify-content-center">
+                                        <button type="button" class="btn-cancel-modal" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -261,14 +221,16 @@
                 </div>
             <?php endif; ?>
 
-
-            <?php if (count($disponibles) === 0 && count($sinCupo) === 0 && count($yaInscripto) === 0): ?>
+            <?php if (count($activas) === 0 && count($canceladas) === 0): ?>
                 <div class="empty-state">
                     <div class="empty-icon">
                         <i class="fa-solid fa-water"></i>
                     </div>
-                    <h5 class="mb-2 text-navy">No hay clases disponibles</h5>
-                    <p class="text-muted mb-4">No se encontraron clases activas en este momento</p>
+                    <h5 class="mb-2" style="color: #1a3a5c;">Todavía no estás inscripto en ninguna clase</h5>
+                    <p class="text-muted mb-4">Explorá las clases disponibles</p>
+                    <a href="?url=lesson-enroll" class="btn-cta">
+                        <i class="fa-solid fa-plus"></i>Ver clases disponibles
+                    </a>
                 </div>
             <?php endif; ?>
 

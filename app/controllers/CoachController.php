@@ -24,6 +24,40 @@ class CoachController extends BaseController
         $this->coachModel = new Coach($pdo);
     }
 
+
+    public function coachHomeView()
+    {
+        $this->checkAuth(2);
+
+        $lessons = $this->coachModel->getCoachHome($_SESSION['user_id']);
+
+        $data = [
+            'title'   => 'Home',
+            'name'    => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 2,
+            'lessons' => $lessons
+        ];
+
+        $this->render('coach/home.view', $data);
+    }
+
+    public function coachLessonsView()
+    {
+        $this->checkAuth(2);
+
+        $lessons = $this->coachModel->getCoachHome($_SESSION['user_id']);
+
+        $data = [
+            'title'   => 'Mis Clases',
+            'name'    => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 2,
+            'lessons' => $lessons
+        ];
+
+        $this->render('coach/coach-lessons.view', $data);
+    }
+
+
     public function completeRegistrationView()
     {
         // Si el parametro Token no está incluido se le asigna 
@@ -45,7 +79,7 @@ class CoachController extends BaseController
         $this->render('coaches/complete-register.view', $data);
     }
 
-    
+
 
 
     public function completeRegistrationPost()
@@ -186,5 +220,4 @@ class CoachController extends BaseController
     {
         return empty($f['first_name']) || empty($f['last_name']) || empty($f['password'] || empty($f['phone'] || empty($f['specialty'])));
     }
-
 }

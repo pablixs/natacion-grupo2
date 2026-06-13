@@ -13,16 +13,7 @@
                     <p class="small text-white-50 mb-3">Escuela de natación especializada en Buenos Aires, Argentina.</p>
 
                 </div>
-                <div class="col-6 col-lg-2">
-                    <!-- <h6 class="fw-bold mb-3">Navegación</h6> -->
-                    <!-- <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Inicio</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Clases</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Alumnos</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Profesores</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Página principal</a></li>
-                    </ul> -->
-                </div>
+
 
         
 
@@ -38,7 +29,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script type="module" src="<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/Main.js"></script>
+<script type="module" src="<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/MainSwimmers.js"></script>
 </body>
 
 </html>

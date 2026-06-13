@@ -27,9 +27,22 @@ switch ( $route ) {
 
     // --- VISTA PRINCIPAL ---
     case 'home':
-    // Aquí mostramos el panel principal ( dashboard ) con la lista de nadadores
-    require_once __DIR__ . '/../app/controllers/HomeController.php';
-    ( new HomeController() )->index();
+        switch ($_SESSION['role_id']){
+            case 2: 
+                require_once __DIR__ . '/../app/controllers/CoachController.php';
+                $controller = new CoachController();
+                $controller->coachHomeView();
+            break;
+            case 3: 
+                require_once __DIR__ . '/../app/controllers/LessonController.php';
+                $controller = new LessonController();
+                $controller->swimmerHomeView();
+            break;
+            default:
+                require_once __DIR__ . '/../app/controllers/HomeController.php';
+                ( new HomeController() )->index();
+            break;
+        }
     break;
 
     // --- MÓDULO DE USUARIOS Y AUTENTICACIÓN ---
@@ -61,16 +74,45 @@ switch ( $route ) {
         if($route === 'save-profile') $controller->completeRegistrationPost();
     break;
 
-    // Rutas de swimmers
+    // Rutas de lessons
 
+    case 'lessons':
     case 'lesson-enroll':
-    case 'lessons-history':
-        require_once __DIR__ . '/../app/controllers/SwimmerController.php';
-        $controller = new SwimmerController();
+    case 'lesson-enroll-new':
+    case 'lesson-unenroll':
 
-        if($route === 'lesson-enroll') $controller->enrollLessonView();
-        if($route === 'lessons-history') $controller->lessonsHistoryView();
+    case 'coach-lessons':
+    case 'lesson-students':
+        require_once __DIR__ . '/../app/controllers/LessonController.php';
+        $controller = new LessonController();
+
+        if($route === 'lessons') $controller->getEnrolledLessonsView();
+        if($route === 'lesson-enroll') $controller->getAvailableLessonsView();
+        if($route === 'lesson-enroll-new') $controller->enrollLessonPost();
+        if($route === 'lesson-unenroll') $controller->unenrollLessonPost();
+
+        if($route === 'coach-lessons') $controller->coachLessonsView();
+        if($route === 'lesson-students') $controller->getLessonStudents();
     break;
+
+
+
+    // Rutas de perfil
+
+    case 'profile':
+    case 'edit-profile':
+    case 'update-profile':
+        require_once __DIR__ . '/../app/controllers/ProfileController.php';
+        $controller = new ProfileController();
+
+        if($route === 'profile') $controller->getSwimmerProfileView();
+        if($route === 'edit-profile') $controller->getEditProfileView();
+        if($route === 'update-profile') $controller->updateProfile();
+
+    break;
+
+
+
     // Rutas de admin
     case 'coaches':
     case 'register-coach': // Vista del form de registro 
@@ -103,6 +145,7 @@ switch ( $route ) {
         if($route === 'manage-users-get') $controller->getUsersAndProfiles();
 
         
+        // Llevar a su propio controlador LessonsController()
         if($route === 'manage-lessons') $controller->manageLessonsView();
         if($route === 'new-lesson') $controller->newLessonView();
         if($route === 'create-lesson') $controller->newLessonPost();

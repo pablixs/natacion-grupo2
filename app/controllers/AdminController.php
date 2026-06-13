@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
-require_once __DIR__ . '/../models/Class.php';
+require_once __DIR__ . '/../models/Lesson.php';
 require_once __DIR__ . '/../utils/SaveActivityLog.php';
 
 
@@ -11,7 +11,7 @@ class AdminController extends BaseController
     private $pdo;
     private $userModel;
     private $profileModel;
-    private $classModel;
+    private $lessonModel;
     private $activityLog;
 
     public function __construct()
@@ -24,7 +24,7 @@ class AdminController extends BaseController
         $this->pdo = $pdo;
         $this->userModel = new User($pdo);
         $this->profileModel = new Profile($pdo);
-        $this->classModel = new ClassModel($pdo);
+        $this->lessonModel = new Lesson($pdo);
         $this->activityLog = new SaveActivityLog($pdo);
     }
 
@@ -33,7 +33,7 @@ class AdminController extends BaseController
 
 
          $coaches = $this->profileModel->getAllDataByRole(2);
-         $specialties = $this->classModel->getSpecialties();
+         $specialties = $this->lessonModel->getSpecialties();
 
         $data = [
             'title' => "Manage Users Dashboard",
@@ -55,7 +55,7 @@ class AdminController extends BaseController
          $this->checkAuth(1);
 
 
-         $lessons = $this->classModel->getLessons();
+         $lessons = $this->lessonModel->getLessons();
 
         $data = [
             'title' => "Manage Users Dashboard",
@@ -91,7 +91,7 @@ class AdminController extends BaseController
             'start_time' => trim($_POST['start_time'] ?? ''),
             'end_time' => trim($_POST['end_time'] ?? ''),
             'capacity' => trim($_POST['capacity'] ?? ''),
-            'active' => $_POST['active'] ?? 1,
+            'active' => isset($_POST['active']) ? 1 : 0
 
         ];
 
@@ -128,7 +128,7 @@ class AdminController extends BaseController
         }
 
         try {
-            $created = $this->classModel->createClass($fields);
+            $created = $this->lessonModel->createClass($fields);
 
             if (!$created) {
                 return $this->json('error', 'No se pudo crear la clase.');
