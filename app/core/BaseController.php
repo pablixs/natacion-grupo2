@@ -20,7 +20,7 @@ class BaseController
                 $this->json('error', 'Sesión expirada', '?url=login');
             } else {
                 // Si es carga de página normal, redirección directa
-                header('Location: ?url=login');
+                header('Location: ?url=landing');
                 exit;
             }
         }

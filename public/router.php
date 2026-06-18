@@ -17,13 +17,17 @@ require_once __DIR__ . '/../app/core/BaseController.php';
 * Usamos el parámetro 'url' definido en el .htaccess o pasado por GET.
 * Si no hay ruta ( página de inicio ), por defecto vamos a 'home'.
 */
-$route = $_GET[ 'url' ] ?? 'home';
+$route = $_GET[ 'url' ] ?? 'landing';
 
 /**
 * 2. DESPACHO DE RUTAS ( DISPATCHER )
 * El switch actúa como una tabla de decisiones.
 */
 switch ( $route ) {
+
+    case 'landing':
+        require_once __DIR__ . '/../app/controllers/HomeController.php';
+        ( new HomeController() )->landing();
 
     // --- VISTA PRINCIPAL ---
     case 'home':

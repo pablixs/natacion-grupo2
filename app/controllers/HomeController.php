@@ -5,6 +5,9 @@ require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
 require_once __DIR__ . '/../utils/SaveActivityLog.php';
+require_once __DIR__ . '/StaticsController.php';
+
+
 
 class HomeController extends BaseController {
     /**
@@ -16,6 +19,7 @@ class HomeController extends BaseController {
     private $profileModel;
     private $activityLog;
     private $pdo;
+    private $staticsController;
 
     public function __construct() {
         /** * Usamos 'global $pdo' porque la conexión se crea en otro archivo ( ej. index o database ).
@@ -29,6 +33,7 @@ class HomeController extends BaseController {
         $this->userModel = new User( $pdo );
         $this->profileModel = new Profile( $pdo );
         $this->activityLog = new SaveActivityLog($pdo);
+        $this->staticsController = new StaticsController();
     }
 
     public function index() {
@@ -68,5 +73,9 @@ class HomeController extends BaseController {
                 break;
         }
         
+    }
+
+    public function landing() {
+        $this->staticsController->getStatics('landing');
     }
 }
