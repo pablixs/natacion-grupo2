@@ -28,9 +28,11 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="?url=home">Inicio</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Clases</a>
-                    </li>
+                    <?php if(isset($_SESSION['role_id'])): ?>  
+                        <li class="nav-item">
+                            <a class="nav-link" href="?url=swimmers">Alumnos</a>
+                        </li>
+                    <?php endif; ?>
                     <?php if(isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link" href="?url=swimmers">Alumnos</a>
@@ -49,7 +51,7 @@
                             <?php 
                             $foto = $_SESSION['profile_image'] ?? 'default-profile.png';
                             $rutaFoto = Env::get('ASSET_URL') . "/img/uploads/profiles/swimmers/" . $foto;
-                             ?>
+                            ?>
                             <img src="<?= $rutaFoto ?>" alt="Perfil" class="profile-img-nav me-2">
                             <span class="d-none d-lg-inline text-white"><?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?></span>
                         </a>
@@ -59,7 +61,7 @@
                             <li><a class="dropdown-item text-danger" href="?url=logout">Cerrar Sesión</a></li>
                         </ul>
                     </li>
-                     <?php else: ?>
+                    <?php else: ?>
                     <li class="nav-item">
                         <a class="nav-link" href="?url=login">Ingresar</a>
                     </li>

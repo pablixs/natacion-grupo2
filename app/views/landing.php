@@ -70,7 +70,7 @@ include __DIR__ . '/users/layout/header.php';
 </section>
 
 <!-- STATS -->
-<section class="container py-3 bg-blue-primary text-white rounded-3">
+<section class="container py-3 bg-navy text-white rounded-3 mb-5">
     <div class="row text-center">
         <div class="col-md-4 mb-4">
             <h2 class="display-5 fw-bold"><?= $swimmers ?></h2>

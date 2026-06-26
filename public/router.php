@@ -28,24 +28,30 @@ switch ( $route ) {
     case 'landing':
         require_once __DIR__ . '/../app/controllers/HomeController.php';
         ( new HomeController() )->landing();
+        break;
 
     // --- VISTA PRINCIPAL ---
     case 'home':
-        switch ($_SESSION['role_id']){
-            case 2: 
-                require_once __DIR__ . '/../app/controllers/CoachController.php';
-                $controller = new CoachController();
-                $controller->coachHomeView();
-            break;
-            case 3: 
-                require_once __DIR__ . '/../app/controllers/LessonController.php';
-                $controller = new LessonController();
-                $controller->swimmerHomeView();
-            break;
-            default:
-                require_once __DIR__ . '/../app/controllers/HomeController.php';
-                ( new HomeController() )->index();
-            break;
+        if (isset($_SESSION['role_id'])) {
+            switch ($_SESSION['role_id']){
+                case 2: 
+                    require_once __DIR__ . '/../app/controllers/CoachController.php';
+                    $controller = new CoachController();
+                    $controller->coachHomeView();
+                break;
+                case 3: 
+                    require_once __DIR__ . '/../app/controllers/LessonController.php';
+                    $controller = new LessonController();
+                    $controller->swimmerHomeView();
+                break;
+                default:
+                    require_once __DIR__ . '/../app/controllers/HomeController.php';
+                    ( new HomeController() )->landing();
+                break;
+            }
+        } else {
+            require_once __DIR__ . '/../app/controllers/HomeController.php';
+            ( new HomeController() )->landing();
         }
     break;
 
@@ -59,7 +65,7 @@ switch ( $route ) {
     case 'login':
     case 'complete-register':
     case 'save-profile':
- 
+
         require_once __DIR__ . '/../app/controllers/UserController.php';
         $controller = new UserController();
 
