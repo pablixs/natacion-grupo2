@@ -66,7 +66,6 @@ function formatTimeHome($time) {
                 </a>
             </div>
 
-            <!-- Saludo -->
             <div class="greeting-card mb-4">
                 <div class="d-flex align-items-center gap-3">
                     <div class="greeting-icon">
@@ -85,7 +84,6 @@ function formatTimeHome($time) {
                 </div>
             </div>
 
-            <!-- Stats -->
             <div class="row g-3 mb-4">
                 <div class="col-6 col-md-4">
                     <div class="stat-card">
@@ -137,7 +135,6 @@ function formatTimeHome($time) {
                 </div>
             </div>
 
-            <!-- Próxima clase -->
             <?php if ($proximaClase): ?>
                 <?php $color = getLevelColorHome($proximaClase['level']); ?>
                 <div class="section-label">Próxima clase</div>
@@ -162,7 +159,6 @@ function formatTimeHome($time) {
                 </div>
             <?php endif; ?>
 
-            <!-- Mis clases resumen -->
             <?php if ($totalActivas > 0): ?>
                 <div class="section-label">Resumen de clases</div>
                 <div class="classes-summary mb-4">

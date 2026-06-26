@@ -2,15 +2,15 @@
 
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Lesson.php';
-require_once __DIR__ . '/../models/Booking.php';
 require_once __DIR__ . '/../models/Coach.php';
+require_once __DIR__ . '/../models/Profile.php';
 
 class LessonController extends BaseController
 {
     private $pdo;
     private $lessonModel;
-    private $bookingModel;
     private $coachModel;
+    private $profileModel;
 
 
     public function __construct()
@@ -19,25 +19,122 @@ class LessonController extends BaseController
 
         $this->pdo = $pdo;
         $this->lessonModel = new Lesson($pdo);
-        $this->bookingModel = new Booking($pdo);
+        $this->profileModel = new Profile($pdo);
         $this->coachModel = new Coach($pdo);
 
     }
 
-     public function coachHomeView()
-    {
-        $this->checkAuth(2);
+    public function manageLessonsView(){
+         $this->checkAuth(1);
 
-        $lessons = $this->coachModel->getCoachHome($_SESSION['user_id']);
+
+         $lessons = $this->lessonModel->getLessons();
 
         $data = [
-            'title'   => 'Home',
-            'name'    => $_SESSION['first_name'] ?? 'Guest',
-            'role_id' => $_SESSION['role_id'] ?? 2,
+            'title' => "Manage Users Dashboard",
+            'user'  => $_SESSION['email'] ?? 'Guest',
+            'name' => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 1,
             'lessons' => $lessons
         ];
 
-        $this->render('coach/home.view', $data);
+
+
+        $this->render('administrator/manage-lessons.view', $data);
+    }
+
+    public function newLessonView(){
+         $this->checkAuth(1);
+
+
+         $coaches = $this->profileModel->getAllDataByRole(2);
+         $specialties = $this->lessonModel->getSpecialties();
+
+        $data = [
+            'title' => "Manage Users Dashboard",
+            'user'  => $_SESSION['email'] ?? 'Guest',
+            'name' => $_SESSION['first_name'] ?? 'Guest',
+            'role_id' => $_SESSION['role_id'] ?? 1,
+            'coaches' => $coaches,
+            'specialties' => $specialties
+        ];
+
+
+
+        $this->render('administrator/new-lesson.view', $data);
+    }
+
+    public function newLessonPost()
+    {
+        $this->checkAuth(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return http_response_code(405);
+        }
+
+        // // 1. Recolección y Sanitización ( Evitamos espacios vacíos y basura )
+
+
+
+        $fields = [
+            'coach_id' => trim($_POST['coach_id'] ?? ''),
+            'level' => trim($_POST['level'] ?? ''),
+            'specialties' =>  $_POST['specialties'],
+            'first_day_of_week' => trim($_POST['first_day_of_week'] ?? ''),
+            'second_day_of_week' => trim($_POST['second_day_of_week'] ?? null),
+            'start_time' => trim($_POST['start_time'] ?? ''),
+            'end_time' => trim($_POST['end_time'] ?? ''),
+            'capacity' => trim($_POST['capacity'] ?? ''),
+            'active' => isset($_POST['active']) ? 1 : 0
+
+        ];
+
+        $days = [
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado"
+        ];
+
+        $levels = [
+            "Principiante",
+            "Intermedio",
+            "Avanzado"
+        ];
+
+
+        if (empty($fields['coach_id']) || empty($fields['level']) || empty($fields['specialties']) || empty($fields['first_day_of_week']) || empty($fields['start_time']) || empty($fields['end_time']) || empty($fields['capacity'])) {
+            return $this->json('warning', 'Faltan datos obligatorios.');
+        }
+
+        if (!in_array($fields['level'], $levels)) {
+            return $this->json('error', 'Nivel no válido.');
+        }
+
+        if (!in_array($fields['first_day_of_week'], $days)) {
+            return $this->json('error', 'Primer día de la semana no válido.');
+        }
+
+        if (!is_null($fields['second_day_of_week']) && !in_array($fields['second_day_of_week'], $days)) {
+            return $this->json('error', 'Segundo día de la semana no válido.');
+        }
+
+        try {
+            $created = $this->lessonModel->createClass($fields);
+
+            if (!$created) {
+                return $this->json('error', 'No se pudo crear la clase.');
+            }
+
+            // $this->activityLog->newLog('class_created', ['coach_id' => $fields['coach_id'], 'level' => $fields['level']]);
+            return $this->json('success', '¡Clase creada! - debug: ' . json_encode($fields) . ' - created: ' . json_encode($created));
+        } catch (Exception $e) {
+            return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
+        }
+
+        return $this->json('success', '¡Clase creada! - debug: ' . json_encode($fields) . ' - created: ');
     }
 
     public function coachLessonsView()
@@ -75,22 +172,6 @@ class LessonController extends BaseController
         ]);
     }
 
-    public function swimmerHomeView()
-    {
-        $this->checkAuth();
-
-        $lessons = $this->lessonModel->getSwimmerHome($_SESSION['user_id']);
-
-        $data = [
-            'title'   => "Home",
-            'name'    => $_SESSION['first_name'] ?? 'Guest',
-            'role_id' => $_SESSION['role_id'] ?? 3,
-            'lessons' => $lessons
-        ];
-
-        $this->render('swimmer/home.view', $data);
-    }
-
     public function getEnrolledLessonsView()
     {
         $this->checkAuth();
@@ -120,64 +201,5 @@ class LessonController extends BaseController
         ];
 
         $this->render('swimmer/enroll-lesson.view', $data);
-    }
-
-    public function enrollLessonPost()
-    {
-        $this->checkAuth();
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return header('Location: ?url=lesson-enroll');
-        }
-
-        $swimmerId = $_SESSION['user_id'];
-        $lessonId = $_POST['lesson_id'] ?? null;
-
-        if (!$lessonId) {
-            return $this->json('warning', 'No se seleccionó ninguna clase.');
-        }
-
-        if ($this->bookingModel->alreadyBooked($swimmerId, $lessonId)) {
-            return $this->json('warning', 'Ya estás inscripto en esta clase.');
-        }
-
-        try {
-            $this->bookingModel->create($swimmerId, $lessonId);
-
-            return $this->json(
-                'success',
-                'Inscripción realizada correctamente.',
-                Env::get('APP_URL') . '/?url=lessons'
-            );
-        } catch (Exception $e) {
-            return $this->json('error', 'No se pudo realizar la inscripción.');
-        }
-    }
-
-    public function unenrollLessonPost()
-    {
-        $this->checkAuth();
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return header('Location: ?url=lesson-enroll');
-        }
-
-        $swimmerId = $_SESSION['user_id'];
-        $lessonId = $_POST['lesson_id'] ?? null;
-
-        if (!$lessonId) {
-            return $this->json('warning', 'No se seleccionó ninguna clase.');
-        }
-        try {
-            $this->bookingModel->unenrollSwimmer($lessonId, $swimmerId);
-
-            return $this->json(
-                'success',
-                'Baja realizada correctamente.',
-                Env::get('APP_URL') . '/?url=lessons'
-            );
-        } catch (Exception $e) {
-            return $this->json('error', 'No se pudo realizar la inscripción.');
-        }
     }
 }

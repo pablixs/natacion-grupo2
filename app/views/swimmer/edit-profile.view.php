@@ -46,7 +46,6 @@ $currentUrl = $_GET['url'] ?? 'edit-profile';
                             <small class="text-muted mt-2 d-block text-center">JPG o PNG. Máximo 2MB.</small>
                         </div>
 
-                        <!-- Nombre y Apellido -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label for="first_name" class="form-label">Nombre</label>
@@ -70,7 +69,6 @@ $currentUrl = $_GET['url'] ?? 'edit-profile';
                             </div>
                         </div>
 
-                        <!-- Teléfono -->
                         <div class="mb-3">
                             <label for="phone" class="form-label">Teléfono</label>
                             <input
@@ -82,7 +80,6 @@ $currentUrl = $_GET['url'] ?? 'edit-profile';
                                 required>
                         </div>
 
-                        <!-- Fecha de nacimiento -->
                         <div class="mb-3">
                             <label for="birth_date" class="form-label">Fecha de nacimiento</label>
                             <input
@@ -94,7 +91,6 @@ $currentUrl = $_GET['url'] ?? 'edit-profile';
                                 required>
                         </div>
 
-                        <!-- Email (solo lectura) -->
                         <div class="mb-4">
                             <label for="email" class="form-label">Email</label>
                             <input
@@ -106,7 +102,6 @@ $currentUrl = $_GET['url'] ?? 'edit-profile';
                             <small class="text-muted">El email no se puede modificar.</small>
                         </div>
 
-                        <!-- Botones -->
                         <div class="d-flex gap-3">
                             <a href="?url=profile" class="btn-cancel-form w-50">Cancelar</a>
                             <button type="submit" class="btn-submit-form w-50">
