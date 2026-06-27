@@ -41,9 +41,10 @@ include __DIR__ . '/../users/layout/header.php';
                                 <label class="form-label">Contraseña</label>
                                 <div class="input-group">
                                     <input type="password" name="password" class="form-control" placeholder="Mín. 6 caracteres" required>
-                                    <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input toggle-password" type="checkbox" id="showPassword">
+                                    <label class="form-check-label small text-muted" for="showPassword">Mostrar contraseña</label>
                                 </div>
                             </div>
 
@@ -51,9 +52,6 @@ include __DIR__ . '/../users/layout/header.php';
                                 <label class="form-label">Repetir contraseña</label>
                                 <div class="input-group">
                                     <input type="password" name="passwordrepeat" class="form-control" placeholder="Mín. 6 caracteres" required>
-                                    <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
                                 </div>
                             </div>
 
