@@ -256,7 +256,7 @@ class RegistrationController extends BaseController
 
         // 2. Validaciones Críticas ( Uso de 'Early Returns' para evitar anidación de IFs )
         if ($this->hasEmptyFields($fields)) {
-            return $this->json('warning', implode(',', $fields));
+            return $this->json('warning', 'Faltan datos obligatorios.');
         }
 
         // Validando minimo y maximo de numero de telefono
