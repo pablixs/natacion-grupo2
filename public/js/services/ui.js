@@ -27,8 +27,7 @@ export const handleAlert = (status, message = null, redirectUrl = null) => {
       }); */
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log("Redirigiendo a:", redirectUrl); // Mirá qué sale acá en la consola
-          window.location.href = "http://localhost/gestion-natacion/?url=login";
+          window.location.href = "http://localhost/natacion-grupo2/?url=home";
         }
       });
       break;

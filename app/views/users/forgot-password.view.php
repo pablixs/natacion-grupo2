@@ -4,7 +4,7 @@
     <div class="row justify-content-center">
         <div class="col-md-5">
 
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 mb-5">
                 <div class="card-body p-4">
 
                     <h4 class="text-center mb-4">
@@ -24,7 +24,7 @@
                                 required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-2">
+                        <button type="submit" class="btn-submit-form w-100 mb-3">
                             Enviar enlace de recuperación
                         </button>
 

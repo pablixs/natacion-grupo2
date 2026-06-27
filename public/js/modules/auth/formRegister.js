@@ -46,7 +46,7 @@ export function initRegister() {
     const formData = new FormData(form);
 
     try {
-      const response = await fetch("?url=register", {
+      const response = await fetch("?url=create-account", {
         method: "POST",
         body: formData,
       });

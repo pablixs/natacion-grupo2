@@ -22,11 +22,13 @@ export function initForgotPassword() {
              * El 'await' detiene la ejecución hasta que el servidor responda,
              * permitiendo un código más limpio y legible (sin .then).
              */
+            handleAlert("loading");
             const response = await fetch("?url=send-reset", {
                 method: "POST",
                 body: formData,
             });
 
+             handleAlert("loaded");
             // Convertimos la respuesta cruda del servidor a un objeto JSON
             const data = await response.json();
 

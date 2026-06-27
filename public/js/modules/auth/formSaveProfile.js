@@ -7,10 +7,12 @@ import { handleAlert } from "../../services/ui.js";
 
 export function initSaveProfile() {
     const formCoach = document.getElementById("formSaveProfile");
-    const token = document.getElementById("token").value;
-    console.log("token: " + token)
-    
+
     if (!formCoach) return;
+
+    const tokenEl = document.getElementById("token");
+    const token = tokenEl ? tokenEl.value : '';
+
     formCoach.addEventListener("submit", async (e) => {
         e.preventDefault();
         /**
@@ -18,7 +20,7 @@ export function initSaveProfile() {
          * incluyendo los archivos (files), siempre que el input tenga el atributo 'name'.
          */
         const formData = new FormData(formCoach);
-           try {
+        try {
 
             const response = await fetch(`?url=save-profile&token=${token}`, {
                 method: "POST",
@@ -26,10 +28,9 @@ export function initSaveProfile() {
             });
 
             const text = await response.text();
-            console.log("text antes del try: ", text);
             try {
+                handleAlert("loaded");
                 const data = JSON.parse(text);
-                console.log("data antes del handleAlert: ", data);
                 // El servidor retornará el status (success, error, warning) y el mensaje
                 handleAlert(data.status, data.message, data.redirect);
             } catch (err) {

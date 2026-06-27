@@ -1,11 +1,11 @@
 <?php
 
 /**
-* EL ENRUTADOR ( ROUTER ) - Front Controller Pattern
-* * Este archivo es el único punto de entrada a la lógica del servidor.
-* Su función es leer la intención del usuario ( vía URL ) y delegar el
-* trabajo al controlador correspondiente.
-*/
+ * EL ENRUTADOR ( ROUTER ) - Front Controller Pattern
+ * * Este archivo es el único punto de entrada a la lógica del servidor.
+ * Su función es leer la intención del usuario ( vía URL ) y delegar el
+ * trabajo al controlador correspondiente.
+ */
 
 // Cargamos el núcleo del sistema una sola vez
 require_once __DIR__ . '/../app/config/db.php';
@@ -13,113 +13,181 @@ require_once __DIR__ . '/../app/core/Env.php';
 require_once __DIR__ . '/../app/core/BaseController.php';
 
 /**
-* 1. CAPTURA DE LA INTENCIÓN
-* Usamos el parámetro 'url' definido en el .htaccess o pasado por GET.
-* Si no hay ruta ( página de inicio ), por defecto vamos a 'home'.
-*/
-$route = $_GET[ 'url' ] ?? 'home';
+ * 1. CAPTURA DE LA INTENCIÓN
+ * Usamos el parámetro 'url' definido en el .htaccess o pasado por GET.
+ * Si no hay ruta ( página de inicio ), por defecto vamos a 'home'.
+ */
+$route = $_GET['url'] ?? 'landing';
 
 /**
-* 2. DESPACHO DE RUTAS ( DISPATCHER )
-* El switch actúa como una tabla de decisiones.
-*/
-switch ( $route ) {
+ * 2. DESPACHO DE RUTAS ( DISPATCHER )
+ * El switch actúa como una tabla de decisiones.
+ */
+switch ($route) {
+    case 'landing':
+        require_once __DIR__ . '/../app/controllers/LandingController.php';
+        (new LandingController())->home();
+        break;
 
-    // --- VISTA PRINCIPAL ---
+    // HOME - Dashboard segun rol
     case 'home':
-    // Aquí mostramos el panel principal ( dashboard ) con la lista de nadadores
-    require_once __DIR__ . '/../app/controllers/HomeController.php';
-    ( new HomeController() )->index();
-    break;
+        if (!isset($_SESSION['role_id'])) {
+            header('Location: ?url=login');
+            exit;
+        }
 
-    // --- MÓDULO DE USUARIOS Y AUTENTICACIÓN ---
-    // Agrupamos rutas relacionadas para evitar repetir el require_once
+        require_once __DIR__ . '/../app/controllers/HomeController.php';
+        $controller = new HomeController();
+
+        switch ($_SESSION['role_id']) {
+            case 1:
+                $controller->adminHome();
+                break;
+            case 2:
+                $controller->coachHome();
+                break;
+            case 3:
+                $controller->swimmerHome();
+                break;
+        }
+        break;
+
+    // AUTH - Login y recuperacion de contraseña
+    case 'login':
+    case 'register':
+    case 'create-account':
     case 'authenticate':
     case 'forgot-password':
     case 'send-reset':
     case 'reset-password':
     case 'update-password':
-    case 'login':
+
+        require_once __DIR__ . '/../app/controllers/AuthController.php';
+        $controller = new AuthController();
+
+        if ($route === 'login')           $controller->showLogin();
+        if ($route === 'register')           $controller->showRegister();
+        if ($route === 'create-account')           $controller->createAccount();
+        if ($route === 'authenticate')    $controller->authenticate();
+        if ($route === 'forgot-password') $controller->forgotPassword();
+        if ($route === 'send-reset')      $controller->sendReset();
+        if ($route === 'reset-password')  $controller->showResetForm();
+        if ($route === 'update-password') $controller->updatePassword();
+        break;
+
+    case 'logout':
+        $_SESSION = [];
+        session_destroy();
+        header('Location: ?url=login');
+        exit;
+        break;
+
+    // REGISTRATION - Alta de usuarios y completar perfil
+    case 'register-coach':
+    case 'create-coach':
+    case 'register-swimmer':
+    case 'create-swimmer':
     case 'complete-register':
     case 'save-profile':
- 
+
+        require_once __DIR__ . '/../app/controllers/RegistrationController.php';
+        $controller = new RegistrationController();
+
+        // --- Dar de alta un usuario (admin) ---
+        if ($route === 'register-coach')    $controller->registerCoachView();
+        if ($route === 'create-coach')      $controller->registerCoachPost();
+        if ($route === 'register-swimmer')  $controller->registerSwimmerView();
+        if ($route === 'create-swimmer')    $controller->registerSwimmerPost();
+
+        // --- Completar perfil (usuario invitado por mail) ---
+        if ($route === 'complete-register') $controller->completeRegistrationView();
+        if ($route === 'save-profile')      $controller->completeRegistrationPost();
+        break;
+
+    // USERS - Listado y consulta de usuarios
+    case 'coaches':
+    case 'swimmers':
+    case 'manage-users-get':
+    case 'edit-user':
+    case 'update-user':
+    case 'delete-user':
+    case 'activate-user':
+    case 'admin-reset-password':
+
         require_once __DIR__ . '/../app/controllers/UserController.php';
         $controller = new UserController();
 
-        /**
-        * Ejecución del método según la acción solicitada.
-        * Separamos la visualización ( GET ) de la lógica de procesamiento ( POST ).
-        */
-        if ( $route === 'login' )           $controller->showLogin();
-        if ( $route === 'authenticate' )    $controller->authenticate();
-        if ( $route === 'forgot-password' ) $controller->forgotPassword();
-        if ( $route === 'send-reset' )      $controller->sendReset();
-        if ( $route === 'reset-password' )  $controller->showResetForm();
-        if ( $route === 'update-password' ) $controller->updatePassword();
-        
-        if($route === 'complete-register') $controller->completeRegistrationView();
-        if($route === 'save-profile') $controller->completeRegistrationPost();
-    break;
-    
-    // Rutas de admin
-    case 'coaches':
-    case 'register-coach': // Vista del form de registro 
-    case 'create-coach': // POST para la creacion del couch
-    case 'swimmers':
-    case 'register-swimmer':
-    case 'create-swimmer':
-    case 'test-mail':
+        if ($route === 'coaches')          $controller->coachesView();
+        if ($route === 'swimmers')         $controller->swimmersView();
+        if ($route === 'manage-users-get') $controller->getUsersAndProfiles();
+        if ($route === 'edit-user')            $controller->editUserView();
+        if ($route === 'update-user')          $controller->updateUserPost();
+        if ($route === 'delete-user')          $controller->softDeleteUserPost();
+        if ($route === 'activate-user')          $controller->enableUserPost();
+        if ($route === 'admin-reset-password') $controller->sendPasswordResetPost();
+        break;
 
-    //test
-    // case 'manage-users-get':
+    // LESSONS - CRUD y visualizacion de clases
+    case 'manage-lessons':
+    case 'new-lesson':
+    case 'create-lesson':
+    case 'get-lesson':
+    case 'update-lesson':
+    case 'delete-lesson':
+    case 'coach-lessons':
+    case 'lesson-students':
+    case 'lessons':
+    case 'lesson-enroll':
 
-        require_once __DIR__ . '/../app/controllers/AdminController.php';
-        $controller = new AdminController();
-        
-        if($route === 'coaches') $controller->coachesView();
-        if($route === 'register-coach') $controller->registerCoachView(); // Renderiza la vista del form para registrar un coach
-        if($route === 'create-coach') $controller->registerCoachPost();  // POST para crear el coach
+        require_once __DIR__ . '/../app/controllers/LessonController.php';
+        $controller = new LessonController();
 
-        if($route === 'swimmers') $controller->swimmersView();
-        if($route === 'register-swimmer') $controller->registerSwimmerView(); // Renderiza la vista del form para registrar un swimmer
-        if($route === 'create-swimmer') $controller->registerSwimmerPost();  // POST para crear el swimmer
+        // --- Admin: gestion de clases ---
+        if ($route === 'manage-lessons')  $controller->manageLessonsView();
+        if ($route === 'new-lesson')      $controller->newLessonView();
+        if ($route === 'create-lesson')   $controller->newLessonPost();
+        if ($route === 'get-lesson')      $controller->getLessonData();
+        if ($route === 'update-lesson')   $controller->editLessonPost();
+        if ($route === 'delete-lesson')   $controller->deleteLessonPost();
 
+        // --- Coach / Admin: ver alumnos de una clase ---
+        if ($route === 'lesson-students') $controller->getLessonStudents();
 
-        if($route === 'test-mail') $controller->testSendEmail('cristiandaniiel3@gmail.com');
+        // --- Coach: ver sus clases y alumnos ---
+        if ($route === 'coach-lessons')   $controller->coachLessonsView();
 
-        if($route === 'manage-users-get') $controller->getUsersAndProfiles();
+        // --- Swimmer: ver clases inscriptas y disponibles ---
+        if ($route === 'lessons')         $controller->getEnrolledLessonsView();
+        if ($route === 'lesson-enroll')   $controller->getAvailableLessonsView();
+        break;
 
+    // BOOKINGS - Inscripción y baja en clases
+    case 'lesson-enroll-new':
+    case 'lesson-unenroll':
 
-    break;
+        require_once __DIR__ . '/../app/controllers/BookingController.php';
+        $controller = new BookingController();
 
-    // Rutas de profile -> Coach
+        if ($route === 'lesson-enroll-new') $controller->enrollLessonPost();
+        if ($route === 'lesson-unenroll')   $controller->unenrollLessonPost();
+        break;
 
-    
-    //break;
+    // PROFILE - Ver y editar perfil
+    case 'profile':
+    case 'edit-profile':
+    case 'update-profile':
 
-    // --- SEGURIDAD: CIERRE DE SESIÓN ---
-    case 'logout':
-    /**
-    * Para destruir una sesión, primero debemos estar seguros de que
-    * el sistema sabe de su existencia ( iniciada previamente en index.php ).
-    */
-    $_SESSION = [];
-    // Vaciamos el array de sesión por seguridad
-    session_destroy();
-    // Eliminamos el archivo de sesión en el servidor
+        require_once __DIR__ . '/../app/controllers/ProfileController.php';
+        $controller = new ProfileController();
 
-    // Redirigimos al Login para forzar una nueva autenticación
-    header( 'Location: ?url=login' );
-    exit;
-    // Detenemos el script para asegurar la redirección
+        if ($route === 'profile')        $controller->getSwimmerProfileView();
+        if ($route === 'edit-profile')   $controller->getEditProfileView();
+        if ($route === 'update-profile') $controller->updateProfile();
+        break;
 
-    // --- MANEJO DE ERRORES ---
+    // 404
     default:
-    /**
-    * Si el usuario intenta acceder a una ruta que no definimos arriba,
-    * devolvemos un código de estado 404 ( Not Found ).
-    */
-    http_response_code( 404 );
-    echo 'Error 404: La página "' . htmlspecialchars( $route ) . '" no existe en este sistema.';
-    break;
+        http_response_code(404);
+        echo 'Error 404: La página "' . htmlspecialchars($route) . '" no existe en este sistema.';
+        break;
 }

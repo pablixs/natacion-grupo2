@@ -2,13 +2,15 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
-require_once __DIR__ . '/../models/Coach.php';
+require_once __DIR__ . '/../models/Lesson.php';
+require_once __DIR__ . '/../services/MailService.php';
 
 class UserController extends BaseController
 {
     private $userModel;
+    private $lessonModel;
     private $profileModel;
-    private $coachModel;
+    private $mailService;
     private $pdo;
 
     public function __construct()
@@ -23,7 +25,8 @@ class UserController extends BaseController
         // Inicializamos los modelos pasándoles la conexión única
         $this->userModel = new User($pdo);
         $this->profileModel = new Profile($pdo);
-        $this->coachModel = new Coach($pdo);
+        $this->lessonModel = new Lesson($pdo);
+        $this->mailService = new MailService();
     }
 
     // --- SECCIÓN: VISTAS Y LISTADOS ---
@@ -33,302 +36,249 @@ class UserController extends BaseController
      * Ideal para mostrar cómo se consumen datos con JOINs desde el modelo.
      */
 
-    public function index()
+    public function coachesView()
     {
-        $this->checkAuth();
-        // Seguridad: si no hay sesión, al login.
-
-        $swimmers = $this->userModel->getCountByRole(3);
-        $this->render('users/index', ['swimmers' => $swimmers]);
-    }
-
-    public function showLogin()
-    {
-        $this->render('users/login.view');
-    }
-
-    public function forgotPassword()
-    {
-        $this->render('users/forgot-password.view', ['title' => 'Recuperar Contraseña']);
-    }
-
-    /**
-     * Lógica de inscripción con Transacción SQL.
-     * Enseñamos que si algo falla en el medio, no debe quedar basura en la DB.
-     */
-
-    public function completeRegistrationView()
-    {
-        // Si el parametro Token no está incluido se le asigna 
-        // un string vacío para que se pueda validar correctamente
-        $token = $_GET['token'] ?? '';
-
-        // Chequeamos que el token exista en la db, si no existe
-        // se lo reenvia al login
-
-        if (!$this->validateToken($token)) {
-            return header('Location: ?url=login');
-        };
-
-        $role_id = $this->userModel->getRoleByToken($token);
+        $this->checkAuth(1);
 
         $data = [
-            'title' => 'Completar registro',
-            'token' => $_GET['token'],
-            'role_id' => $role_id
+            'title'           => 'Gestión de Profesores',
+            'user'            => $_SESSION['email'] ?? 'Guest',
+            'name'            => $_SESSION['first_name'] ?? 'Guest',
+            'role_id'         => $_SESSION['role_id'] ?? 1,
+            'users_data'      => $this->profileModel->getAllByRoleWithStatus(2),
+            'page_title'      => 'Gestión de Profesores',
+            'register_url'    => '?url=register-coach',
+            'register_label'  => 'Dar de alta profesor',
+            'empty_icon'      => 'fa-user-tie',
+            'empty_message'   => 'No hay profesores registrados'
         ];
 
-        $this->render('users/complete-register.view', $data);
+        $this->render('administrator/coach/coaches.view', $data);
     }
 
-
-
-
-    public function completeRegistrationPost()
+    public function swimmersView()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return header('Location: ?url=login');
-        }
+        $this->checkAuth(1);
 
-        $token = $_GET['token'];
-
-        $result = $this->userModel->getUserIdAndTokenIdByToken($token);
-
-        $user_id = $result['user_id'];
-        $token_id = $result['token_id'];
-        // 1. Recolección y Sanitización ( Evitamos espacios vacíos y basura )
-        $fields = [
-            'first_name'    => trim($_POST['nombre'] ?? ''),
-            'last_name'     => trim($_POST['apellido'] ?? ''),
-            'password'       => $_POST['password'] ?? '',
-            'passwordrepeat' => $_POST['passwordrepeat'] ?? '',
-            'birth_date' => trim($_POST['birth_date'] ?? ''),
-            'phone'          => trim($_POST['telefono'] ?? ''),
-            'specialty' => $_POST['especialidad'] ?? null,
-            'profile_image'  => 'default-profile.png', //valor por defecto
-            'user_id' => $user_id,
-            'token_id' => $token_id
-
+        $data = [
+            'title'           => 'Gestión de Alumnos',
+            'user'            => $_SESSION['email'] ?? 'Guest',
+            'name'            => $_SESSION['first_name'] ?? 'Guest',
+            'role_id'         => $_SESSION['role_id'] ?? 1,
+            'users_data'      => $this->profileModel->getAllByRoleWithStatus(3),
+            'page_title'      => 'Gestión de Alumnos',
+            'register_url'    => '?url=register-swimmer',
+            'register_label'  => 'Dar de alta alumno',
+            'empty_icon'      => 'fa-person-swimming',
+            'empty_message'   => 'No hay alumnos registrados'
         ];
 
+        $this->render('administrator/swimmer/swimmers.view', $data);
+    }
 
-        // 2. Validaciones Críticas ( Uso de 'Early Returns' para evitar anidación de IFs )
-        if ($this->hasEmptyFields($fields)) {
-            return $this->json('warning', implode(',', $fields));
+    public function getUsersAndProfiles()
+    {
+        $this->checkAuth(1);
+
+        $users = $this->userModel->getUsersAndProfiles();
+
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'users' => $users]);
+        exit;
+    }
+
+    public function editUserView()
+    {
+        $this->checkAuth(1);
+
+        $userId = intval($_GET['id'] ?? 0);
+
+        if ($userId <= 0) {
+            header('Location: ?url=home');
+            exit;
         }
 
-        // Validando minimo y maximo de numero de telefono
-        if (strlen($fields['phone']) < 6 || strlen($fields['phone']) > 15) {
-            return $this->json('warning', 'El número de teléfono debe tener de 6 a 15 números');
+        $userData = $this->userModel->getUserWithProfileById($userId);
+
+        if (!$userData) {
+            header('Location: ?url=home');
+            exit;
         }
-
-        // Validando contraseña repetida
-        if ($fields['password'] !== $fields['passwordrepeat']) {
-            return $this->json('warning', 'Las contraseñas no coinciden');
-        }
-
-
-        if (strlen($fields['password']) < 6) {
-            return $this->json('warning', 'La contraseña es muy corta (mín. 6 caracteres).');
-        }
+        
+        $specialties = $this->lessonModel->getSpecialties();
+        $coachSpecialtyIds = $userData['role_id'] == 2
+            ? $this->lessonModel->getCoachSpecialtyIds($userId)
+            : [];
 
 
-        // --- GESTIÓN DE IMAGEN DE PERFIL ---
-        $tempFile = null;
-        if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = __DIR__ . '/../../public/img/uploads/profiles/swimmers/';
+        $data = [
+            'title'    => 'Editar Usuario',
+            'user'     => $_SESSION['email'] ?? 'Guest',
+            'name'     => $_SESSION['first_name'] ?? 'Guest',
+            'role_id'  => $_SESSION['role_id'] ?? 1,
+            'userData' => $userData,
+            'back_url' => $userData['role_id'] == 2 ? '?url=coaches' : '?url=swimmers',
+            'specialties'       => $specialties,
+            'coachSpecialtyIds' => $coachSpecialtyIds
+        ];
 
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            $extension = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
-            $allowed = ['jpg', 'jpeg', 'png', 'gif'];
-
-            if (in_array($extension, $allowed)) {
-
-                // 1. Tomamos la inicial del nombre en minúscula
-                $initial = strtolower(substr($fields['first_name'], 0, 1));
-
-                // 2. Limpiamos el apellido ( quitamos espacios y pasamos a minúscula )
-                $lastName = strtolower(str_replace(' ', '', $fields['last_name']));
-
-                // 3. Generamos un número aleatorio de 4 dígitos para evitar colisiones ( Juan Perez vs Jorge Perez )
-                $randomNumber = rand(1000, 9999);
-
-                // Resultado ej: jperez_4521.jpg
-                $newFileName = 'swimmer_' . $initial . $lastName . '_' . $randomNumber . '.' . $extension;
-                $absolutePath = $uploadDir . $newFileName;
-
-                if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $absolutePath)) {
-                    $fields['profile_image'] = $newFileName;
-                    $tempFile = $absolutePath;
-                }
-            }
-        }
-
-        return $this->executeRegistration($fields, $tempFile);
+        $this->render('administrator/edit-user.view', $data);
     }
 
 
-      private function executeRegistration($f, $tempFile = null){
+    public function updateUserPost()
+    {
+        $this->checkAuth(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return http_response_code(405);
+        }
+
+        $userId = intval($_POST['user_id'] ?? 0);
+
+        if ($userId <= 0) {
+            return $this->json('error', 'ID de usuario inválido.');
+        }
+
+        $fields = [
+            'email'      => trim($_POST['email'] ?? ''),
+            'first_name' => trim($_POST['first_name'] ?? ''),
+            'last_name'  => trim($_POST['last_name'] ?? ''),
+            'phone'      => trim($_POST['phone'] ?? ''),
+            'birth_date' => trim($_POST['birth_date'] ?? ''),
+            'specialty'  => trim($_POST['specialty'] ?? '') ?: null,
+            'role_id' =>    trim($_POST['role_id'] ?? 3),
+        ];
+
+        if (empty($fields['email']) || empty($fields['first_name']) || empty($fields['last_name']) || empty($fields['phone'])) {
+            return $this->json('warning', 'Faltan datos obligatorios.');
+        }
+
+        if (!filter_var($fields['email'], FILTER_VALIDATE_EMAIL)) {
+            return $this->json('error', 'El email no es válido.');
+        }
+
+        if (!in_array($fields['role_id'], [1, 2, 3])) {
+            return $this->json('error', 'Rol no válido.');
+        }
+
+        $existing = $this->userModel->findByEmail($fields['email']);
+        if ($existing && $existing['id'] != $userId) {
+            return $this->json('error', 'Ese email ya está registrado por otro usuario.');
+        }
 
         try {
-            $this->pdo->beginTransaction();
+            $updated = $this->userModel->updateUserWithProfile($userId, $fields);
 
-            $this->profileModel->create($f);
-
-            $hashedPassword = password_hash($f['password'], PASSWORD_BCRYPT);
-            $user_id = $f['user_id'];
-            $token_id = $f['token_id'];
-
-            $this->coachModel->updatePasswordWhenSaveProfile($hashedPassword, $user_id);
-            $this->userModel->setProfileCreatedTrueByUserId($user_id);
-            $this->userModel->setTokenToExpired($token_id);
-
-            $this->pdo->commit();
-
-            // 1. Obtenemos la URL base del .env ( ej: http://localhost/gestion-natacion )
-            $baseUrl = rtrim(Env::get('APP_URL'), '/');
-
-            // 2. Si por algún error el .env está vacío, fallamos con una base segura
-            if (empty($baseUrl)) {
-                $baseUrl = 'http://localhost/gestion-natacion';
+            if (!$updated) {
+                return $this->json('error', 'No se pudo actualizar el usuario.');
             }
 
-            // 3. Construimos la URL final
-            $loginUrl = $baseUrl . '/?url=login';
+            if ($fields['role_id'] == 2 && isset($_POST['specialties'])) {
+                $this->lessonModel->saveCoachSpecialties($userId, $_POST['specialties']);
+            }
 
-            return $this->json('success', '¡Registro completado!', $loginUrl);
+            $backUrl = $fields['role_id'] == 2 ? '?url=coaches' : '?url=swimmers';
+
+            return $this->json('success', '¡Usuario actualizado correctamente!', $backUrl);
         } catch (Exception $e) {
-            if ($this->pdo->inTransaction()) $this->pdo->rollBack();
-            // Si algo falló en SQL, borramos la foto para no dejar basura
-            if ($tempFile && file_exists($tempFile)) {
-                unlink($tempFile);
-            };
-            return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
+            return $this->json('error', 'Error al actualizar: ' . $e->getMessage());
         }
     }
 
-
-    /**
-     * Procesa la autenticación de usuarios.
-     */
-
-    public function authenticate()
+    public function softDeleteUserPost()
     {
+        $this->checkAuth(1);
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->json('error', 'Acceso no permitido.');
+            return http_response_code(405);
         }
 
-        $email = trim($_POST['email'] ?? '');
-        $pass  = $_POST['password'] ?? '';
+        $userId = intval($_POST['user_id'] ?? 0);
 
-        $user = $this->userModel->login($email, $pass);
-
-        if ($user) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['role_id'] = $user['role_id'];
-            $_SESSION['email']   = $user['email'];
-            // Datos para el saludo y la foto que pide el nuevo layout
-            $_SESSION['first_name']    = $user['first_name'];
-
-            $_SESSION['profile_image'] = $user['profile_image'];
-
-            return $this->json('success', '¡Bienvenido ' . $user['first_name'] . '!', Env::get('APP_URL') . '/?url=home');
+        if ($userId <= 0) {
+            return $this->json('error', 'ID de usuario inválido.');
         }
 
-        return $this->json('error', 'Credenciales incorrectas.');
+        if ($userId == $_SESSION['user_id']) {
+            return $this->json('error', 'No podés desactivar tu propia cuenta.');
+        }
+
+        try {
+            $deleted = $this->userModel->softDeleteUser($userId);
+
+            if (!$deleted) {
+                return $this->json('error', 'No se pudo desactivar el usuario.');
+            }
+
+            return $this->json('success', 'Usuario desactivado correctamente.');
+        } catch (Exception $e) {
+            return $this->json('error', 'Error al desactivar: ' . $e->getMessage());
+        }
+    }
+
+    public function enableUserPost()
+    {
+        $this->checkAuth(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return http_response_code(405);
+        }
+
+        $userId = intval($_POST['user_id'] ?? 0);
+
+        if ($userId <= 0) {
+            return $this->json('error', 'ID de usuario inválido.');
+        }
+
+        if ($userId == $_SESSION['user_id']) {
+            return $this->json('error', 'No podés desactivar tu propia cuenta.');
+        }
+
+        try {
+            $deleted = $this->userModel->activateUser($userId);
+
+            if (!$deleted) {
+                return $this->json('error', 'No se pudo activar el usuario.');
+            }
+
+            return $this->json('success', 'Usuario activado correctamente.');
+        } catch (Exception $e) {
+            return $this->json('error', 'Error al activar: ' . $e->getMessage());
+        }
     }
 
 
-
-
-    // --- SECCIÓN: RECUPERACIÓN DE CONTRASEÑA ---
-
-    public function sendReset()
+    public function sendPasswordResetPost()
     {
-        $email = $_POST['email'] ?? '';
+        $this->checkAuth(1);
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->json('error', 'Email inválido.');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return http_response_code(405);
         }
 
-        $user = $this->userModel->findByEmail($email);
+        $userId = intval($_POST['user_id'] ?? 0);
 
-        if ($user) {
-            $token = bin2hex(random_bytes(32));
+        if ($userId <= 0) {
+            return $this->json('error', 'ID de usuario inválido.');
+        }
+
+        $user = $this->userModel->getUserWithProfileById($userId);
+
+        if (!$user) {
+            return $this->json('error', 'Usuario no encontrado.');
+        }
+
+        try {
+            $token   = bin2hex(random_bytes(32));
             $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-            $this->userModel->savePasswordToken($email, $token, $expires);
+            $this->userModel->savePasswordToken($userId, $user['email'], $token, $expires);
+            $this->mailService->sendEmailResetPassword($user['email'], $token);
 
-            require_once __DIR__ . '/../services/MailService.php';
-            $mailService = new MailService();
-
-            $enviado = $mailService->sendEmailResetPassword($email, $token);
-
-            if (!$enviado) {
-                return $this->json('error', 'El servidor de correo falló.');
-            }
+            return $this->json('success', 'Se envió un enlace de cambio de contraseña a ' . $user['email']);
+        } catch (Exception $e) {
+            return $this->json('error', 'No se pudo enviar el email: ' . $e->getMessage());
         }
-
-        return $this->json('success', 'Si el correo existe, recibirás un enlace de recuperación.', Env::get('APP_URL') . '/?url=login');
-    }
-
-    public function showResetForm()
-    {
-        $token = $_GET['token'] ?? '';
-
-        if (empty($token)) {
-            die('Error: El token de recuperación ha expirado o es inválido.');
-        }
-
-        $this->render('users/reset-password.view', [
-            'title' => 'Restablecer Contraseña',
-            'token' => $token
-        ]);
-    }
-
-    public function updatePassword()
-    {
-        $token    = $_POST['token'] ?? '';
-        $password = $_POST['password'] ?? '';
-
-        if (empty($token) || strlen($password) < 6) {
-            return $this->json('warning', 'La contraseña debe tener al menos 6 caracteres.');
-        }
-
-        $resetRequest = $this->userModel->validateToken($token);
-
-        if ($resetRequest) {
-            $email = $resetRequest['email'];
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-            try {
-                $this->pdo->beginTransaction();
-
-                $this->userModel->updatePasswordByEmail($email, $hashedPassword);
-                $this->userModel->deleteToken($token);
-
-                $this->pdo->commit();
-                return $this->json('success', '¡Contraseña actualizada con éxito!', Env::get('APP_URL') . '?url=login');
-            } catch (Exception $e) {
-                if ($this->pdo->inTransaction()) $this->pdo->rollBack();
-                return $this->json('error', 'No se pudo actualizar la contraseña.');
-            }
-        }
-
-        return $this->json('error', 'El enlace es inválido o ha expirado.');
-    }
-
-    public function validateToken(string $token)
-    {
-        return $this->coachModel->validateToken($token);
-    }
-    
-
-    private function hasEmptyFields($f)
-    {
-        return empty($f['first_name']) || empty($f['last_name']) || empty($f['password'] || empty($f['phone'] || empty($f['birth_date'])));
     }
 }

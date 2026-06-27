@@ -159,16 +159,16 @@ class User
      * Guarda un token de recuperación, eliminando cualquier token previo del mismo email.
      */
 
-    public function savePasswordToken(string $email, string $token, string $expires)
+    public function savePasswordToken(string $user_id, string $email, string $token, string $expires)
     {
         try {
             // 1. Limpiamos registros de recuperación antiguos para este usuario
-            $stmtDel = $this->db->prepare('DELETE FROM password_resets WHERE email = ?');
-            $stmtDel->execute([$email]);
+            // $stmtDel = $this->db->prepare('DELETE FROM password_resets WHERE email = ?');
+            //$stmtDel->execute([$email]);
 
             // 2. Insertamos el nuevo token de seguridad
-            $stmtIns = $this->db->prepare('INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)');
-            return $stmtIns->execute([$email, $token, $expires]);
+            $stmtIns = $this->db->prepare('INSERT INTO password_resets (user_id, email, token, expires_at) VALUES (?, ?, ?, ?)');
+            return $stmtIns->execute([$user_id, $email, $token, $expires]);
         } catch (PDOException $e) {
             error_log('Error en savePasswordToken: ' . $e->getMessage());
             return false;
@@ -177,7 +177,7 @@ class User
 
     public function getUsersCount()
     {
-        $sql = "SELECT COUNT(DISTINCT u.id) as usuarios FROM users u";
+        $sql = "SELECT COUNT(DISTINCT u.id) as usuarios FROM users u WHERE role_id <> 1";
 
         $stmt = $this->db->query($sql);
 
@@ -203,9 +203,101 @@ class User
      * Elimina el token una vez que ya ha sido utilizado.
      */
 
-    public function deleteToken(string $token)
+    public function setTokenToExpiredPassword(string $token)
     {
-        $stmt = $this->db->prepare('DELETE FROM password_resets WHERE token = ?');
+        $sql = "UPDATE password_resets SET expires_at = NOW() WHERE token = ?
+        ";
+
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([$token]);
+    }
+
+    public function getUserWithProfileById(int $userId)
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT u.id, u.email, u.role_id, u.deleted_at,
+                       p.first_name, p.last_name, p.phone, p.birth_date, p.specialty
+                FROM users u
+                LEFT JOIN profiles p ON p.user_id = u.id
+                WHERE u.id = ?
+            ");
+            $stmt->execute([$userId]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log('Error al obtener usuario por ID: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+
+    public function updateUserWithProfile(int $userId, array $fields)
+    {
+        try {
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare('UPDATE users SET email = ?, role_id = ? WHERE id = ?');
+            $stmt->execute([$fields['email'], $fields['role_id'], $userId]);
+
+            $stmt = $this->db->prepare(
+                'UPDATE profiles SET first_name = ?, last_name = ?, phone = ?, birth_date = ?, specialty = ?
+                 WHERE user_id = ?'
+            );
+            $stmt->execute([
+                $fields['first_name'],
+                $fields['last_name'],
+                $fields['phone'],
+                $fields['birth_date'],
+                $fields['specialty'] ?? null,
+                $userId
+            ]);
+
+            $this->db->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log('Error al actualizar usuario: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function softDeleteUser(int $userId)
+    {
+        try {
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare('UPDATE users SET deleted_at = NOW() WHERE id = ?');
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare('UPDATE profiles SET deleted_at = NOW() WHERE user_id = ?');
+            $stmt->execute([$userId]);
+
+            $this->db->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log('Error en soft delete: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function activateUser(int $userId)
+    {
+        try {
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare('UPDATE users SET deleted_at = NULL WHERE id = ?');
+            $stmt->execute([$userId]);
+
+            $stmt = $this->db->prepare('UPDATE profiles SET deleted_at = NULL WHERE user_id = ?');
+            $stmt->execute([$userId]);
+
+            $this->db->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log('Error al activar usuario: ' . $e->getMessage());
+            return false;
+        }
     }
 }

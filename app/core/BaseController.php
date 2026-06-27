@@ -18,6 +18,7 @@ class BaseController
             // Si es una petición Fetch, mandamos JSON
             if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
                 $this->json('error', 'Sesión expirada', '?url=login');
+                exit;
             } else {
                 // Si es carga de página normal, redirección directa
                 header('Location: ?url=login');
