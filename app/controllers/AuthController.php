@@ -55,7 +55,7 @@ class AuthController extends BaseController
         ];
 
         if ($this->hasEmptyFields($fields)) {
-            return $this->json('warning', 'Faltan datos obligatorios.' . $this->hasEmptyFields($fields));
+            return $this->json('warning', 'Faltan datos obligatorios.');
         }
 
         if (strlen($fields['phone']) < 6 || strlen($fields['phone']) > 15) {
@@ -245,7 +245,7 @@ class AuthController extends BaseController
             return $this->json('error', 'El enlace es inválido o ha expirado.');
             //code...
         } catch (\Throwable $th) {
-            return $this->json('error', 'error trycatch ' . $th);
+            return $this->json('error', 'No se pudo actualizar la contraseña.');
         }
     }
 
