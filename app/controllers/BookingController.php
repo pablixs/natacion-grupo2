@@ -1,16 +1,23 @@
 <?php
 require_once __DIR__ . '/../models/Booking.php';
+require_once __DIR__ . '/../utils/SaveActivityLog.php';
+require_once __DIR__ . '/../models/Lesson.php';
 
 class BookingController extends BaseController
 {
     private $pdo;
     private $bookingModel;
+    private $activityLog;
+    private $lessonModel;
 
     public function __construct()
     {
         global $pdo;
         $this->pdo = $pdo;
         $this->bookingModel = new Booking($pdo);
+        $this->lessonModel = new Lesson($pdo);
+        $this->activityLog = new SaveActivityLog();
+
     }
 
     public function enrollLessonPost()
@@ -34,6 +41,14 @@ class BookingController extends BaseController
 
         try {
             $this->bookingModel->create($swimmerId, $lessonId);
+
+
+            $lesson = $this->lessonModel->getLessonById($lessonId);
+
+            $this->activityLog->newLog('swimmer_enrolled', [
+                'name'       => $_SESSION['first_name'],
+                'class_name' => $lesson['level'] . ' - ' . $lesson['first_day_of_week'] . ' y ' . $lesson['second_day_of_week']
+            ]);
 
             return $this->json(
                 'success',

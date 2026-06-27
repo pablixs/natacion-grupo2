@@ -23,17 +23,19 @@ class SaveActivityLog
         }
     }
 
-    private  function buildLog(string $type, array $data)
-    {
-        return match ($type) {
-            'coach_registered'   => [$type, $data['email']],
-            'swimmer_registered' => [$type, $data['email']],
-            'profile_completed'  => [$type, $data['name']],
-            // 'swimmer_enrolled'   => [$type, $data['name'] . '|' . $data['class']],
-            'class_created'      => [$type, $data['class_name']],
-            default => throw new \InvalidArgumentException("Tipo desconocido: $type")
-        };
-    }
+    private function buildLog(string $type, array $data)
+{
+    return match ($type) {
+        'coach_registered'   => [$type, $data['email']],
+        'swimmer_registered' => [$type, $data['email']],
+        'profile_completed'  => [$type, $data['name']],
+        'class_created'      => [$type, $data['class_name']],
+        'class_deleted'      => [$type, $data['class_name']],
+        'swimmer_enrolled'   => [$type, $data['name'] . '|' . $data['class_name']],
+        'swimmer_self_registered' => [$type, $data['name']],
+        default => throw new \InvalidArgumentException("Tipo desconocido: $type")
+    };
+}
 
     public  function newLog(string $type, array $data)
     {

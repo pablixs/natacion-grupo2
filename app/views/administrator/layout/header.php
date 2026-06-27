@@ -1,3 +1,7 @@
+<?php
+    /** @var string $active */ 
+    $currentUrl = $_GET['url'] ?? 'home';
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -26,19 +30,19 @@
             <div class="collapse navbar-collapse" id="navbar2">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="?url=home">Inicio</a>
+                        <a class="nav-link <?= $currentUrl === 'home' ? 'active' : '' ?> " href="?url=home">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="?url=manage-lessons">Clases</a>
+                        <a class="nav-link <?= in_array($currentUrl, ['manage-lessons', 'new-lesson']) ? 'active' : '' ?>" href="?url=manage-lessons">Clases</a>
                     </li>
                     <?php if(isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="?url=swimmers">Alumnos</a>
+                            <a class="nav-link <?= $currentUrl === 'swimmers' ? 'active' : '' ?>" href="?url=swimmers">Alumnos</a>
                         </li>
                     <?php endif; ?>
                     <?php if(isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="?url=coaches">Profesores</a>
+                            <a class="nav-link <?= $currentUrl === 'coaches' ? 'active' : '' ?>" href="?url=coaches">Profesores</a>
                         </li>
                     <?php endif; ?>
                 </ul>
@@ -54,8 +58,8 @@
                             <span class="d-none d-lg-inline text-white"><?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <!-- <li><a class="dropdown-item" href="#">Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li> -->
+                            <li><a class="dropdown-item" href="?url=profile">Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="?url=logout">Cerrar Sesión</a></li>
                         </ul>
                     </li>

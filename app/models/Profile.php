@@ -109,4 +109,26 @@ class Profile
             $data['profile_image'] ?? 'default-profile.png'
         ]);
     }
+
+    public function getAllByRoleWithStatus(int $roleId)
+    {
+        try {
+            $sql = "SELECT u.id, u.email, 
+                        CONCAT(p.first_name, ' ', p.last_name) as full_name, 
+                        p.first_name, p.last_name, p.phone, p.birth_date,
+                        CASE WHEN u.deleted_at IS NULL THEN 1 ELSE 0 END as active,
+                        u.profile_created
+                    FROM users u
+                    LEFT JOIN profiles p ON u.id = p.user_id
+                    WHERE u.role_id = ?
+                    ORDER BY u.deleted_at IS NOT NULL, p.last_name ASC";
+ 
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$roleId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log('Error al obtener usuarios por rol: ' . $e->getMessage());
+            return [];
+        }
+    }
 }

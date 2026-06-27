@@ -202,7 +202,7 @@
                 </form>
             </div>
             <div class="modal-footer justify-content-center gap-2">
-                <button type="button" class="btn-cancel-modal" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn-cancel-modal w-100" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn-submit" id="btnSubmitEditLesson">Guardar cambios</button>
             </div>
         </div>
@@ -242,7 +242,6 @@
                             <th>Nombre</th>
                             <th>Email</th>
                             <th>Fecha de inscripción</th>
-                            <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody id="studentsTableBody">

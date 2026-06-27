@@ -98,7 +98,7 @@ class Lesson
                     '/', l.capacity
                 ) as capacity, 
                 l.active,
-                (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.swimmer_id = :swimmer_id) as is_enrolled
+                (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.swimmer_id = ?) as is_enrolled
             FROM lessons l 
             INNER JOIN lessons_specialties ls ON ls.lesson_id = l.id 
             INNER JOIN specialties s ON s.id = ls.specialty_id 
@@ -164,36 +164,37 @@ class Lesson
         }
     }
 
-     public function getLessonById(int $lessonId)
+    public function getLessonById(int $lessonId)
     {
         try {
             $stmt = $this->db->prepare("SELECT * FROM lessons WHERE id = ?");
             $stmt->execute([$lessonId]);
             $lesson = $stmt->fetch(PDO::FETCH_ASSOC);
- 
+
             if (!$lesson) return null;
- 
+
             $stmt = $this->db->prepare("SELECT specialty_id FROM lessons_specialties WHERE lesson_id = ?");
             $stmt->execute([$lessonId]);
             $lesson['specialty_ids'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
- 
+
             return $lesson;
         } catch (PDOException $e) {
             error_log('Error al obtener clase por ID: ' . $e->getMessage());
             return null;
         }
     }
- 
+
     public function updateClass(array $fields)
     {
         try {
             $this->db->beginTransaction();
- 
+
             $stmt = $this->db->prepare(
                 'UPDATE lessons 
-                 SET coach_id = ?, level = ?, first_day_of_week = ?, second_day_of_week = ?, 
-                     start_time = ?, end_time = ?, capacity = ?, active = ?
-                 WHERE id = ?'
+     SET coach_id = ?, level = ?, first_day_of_week = ?, second_day_of_week = ?, 
+         start_time = ?, end_time = ?, capacity = ?, active = ?,
+         deactivated_at = CASE WHEN ? = 0 THEN NOW() ELSE NULL END
+     WHERE id = ?'
             );
             $stmt->execute([
                 $fields['coach_id'],
@@ -204,17 +205,18 @@ class Lesson
                 $fields['end_time'],
                 $fields['capacity'],
                 $fields['active'],
+                $fields['active'],
                 $fields['id']
             ]);
- 
+
             $stmtDel = $this->db->prepare('DELETE FROM lessons_specialties WHERE lesson_id = ?');
             $stmtDel->execute([$fields['id']]);
- 
+
             $stmtIns = $this->db->prepare('INSERT INTO lessons_specialties (lesson_id, specialty_id) VALUES (?, ?)');
             foreach ($fields['specialties'] as $specialtyId) {
                 $stmtIns->execute([$fields['id'], $specialtyId]);
             }
- 
+
             $this->db->commit();
             return true;
         } catch (PDOException $e) {
@@ -251,13 +253,13 @@ class Lesson
     {
         try {
             $this->db->beginTransaction();
- 
+
             $stmt = $this->db->prepare('DELETE FROM bookings WHERE lesson_id = ?');
             $stmt->execute([$lessonId]);
- 
+
             $stmt = $this->db->prepare('DELETE FROM lessons WHERE id = ?');
             $stmt->execute([$lessonId]);
- 
+
             $this->db->commit();
             return true;
         } catch (PDOException $e) {
@@ -267,5 +269,43 @@ class Lesson
         }
     }
 
-    
+    public function getCoachSpecialtyIds(int $userId)
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT specialty_id FROM coaches_specialties WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (PDOException $e) {
+            error_log('Error al obtener especialidades del coach: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function saveCoachSpecialties(int $userId, array $specialtyIds)
+    {
+        $stmtDel = $this->db->prepare('DELETE FROM coaches_specialties WHERE user_id = ?');
+        $stmtDel->execute([$userId]);
+
+        $stmtIns = $this->db->prepare('INSERT INTO coaches_specialties (user_id, specialty_id) VALUES (?, ?)');
+        foreach ($specialtyIds as $specialtyId) {
+            $stmtIns->execute([$userId, intval($specialtyId)]);
+        }
+    }
+
+    public function getCoachSpecialtyNames(int $userId)
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT s.specialty 
+                FROM coaches_specialties cs
+                INNER JOIN specialties s ON s.id = cs.specialty_id
+                WHERE cs.user_id = ?
+            ");
+            $stmt->execute([$userId]);
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (PDOException $e) {
+            error_log('Error al obtener nombres de especialidades del coach: ' . $e->getMessage());
+            return [];
+        }
+    }
 }

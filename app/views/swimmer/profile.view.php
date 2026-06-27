@@ -68,14 +68,18 @@ $currentUrl = $_GET['url'] ?? 'home';
                             </div>
                         </div>
 
-                        <?php if (!empty($profile['specialty'])): ?>
+                        <?php if ($_SESSION['role_id'] == 2 && !empty($coachSpecialties)): ?>
                             <div class="profile-info-item">
                                 <div class="profile-info-icon">
                                     <i class="fa-solid fa-star"></i>
                                 </div>
                                 <div>
-                                    <span class="profile-info-label">Especialidad</span>
-                                    <span class="profile-info-value"><?= htmlspecialchars($profile['specialty']) ?></span>
+                                    <span class="profile-info-label">Especialidades</span>
+                                    <div class="mt-1">
+                                        <?php foreach ($coachSpecialties as $spec): ?>
+                                            <span class="badge badge-specialty intermedio"><?= htmlspecialchars($spec) ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
                             </div>
                         <?php endif; ?>

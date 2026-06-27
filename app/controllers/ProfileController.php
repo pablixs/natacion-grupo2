@@ -2,12 +2,14 @@
 
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Profile.php';
+require_once __DIR__ . '/../models/Lesson.php';
 
 
 class ProfileController extends BaseController
 {
     private $pdo;
     private Profile $profileModel;
+    private Lesson $lessonModel;
 
     public function __construct()
     {
@@ -15,6 +17,7 @@ class ProfileController extends BaseController
 
         $this->pdo = $pdo;
         $this->profileModel = new Profile($pdo);
+        $this->lessonModel = new Lesson($pdo);
     }
 
     public function getEditProfileView()
@@ -22,6 +25,10 @@ class ProfileController extends BaseController
         $this->checkAuth();
 
         $profile = $this->profileModel->getSwimmerProfile($_SESSION['user_id']);
+        $specialties = $this->lessonModel->getSpecialties();
+        $coachSpecialtyIds = $_SESSION['role_id'] == 2
+            ? $this->lessonModel->getCoachSpecialtyIds($_SESSION['user_id'])
+            : [];
 
         if (!$profile) {
             return header('Location: ?url=home');
@@ -31,7 +38,9 @@ class ProfileController extends BaseController
             'title'   => 'Editar Perfil',
             'name'    => $_SESSION['first_name'] ?? 'Guest',
             'role_id' => $_SESSION['role_id'] ?? 3,
-            'profile' => $profile
+            'profile' => $profile,
+            'specialties' => $specialties,
+            'coachSpecialtyIds' => $coachSpecialtyIds
         ];
 
         $this->render('swimmer/edit-profile.view', $data);
@@ -121,6 +130,9 @@ class ProfileController extends BaseController
 
             $this->pdo->commit();
 
+            if ($_SESSION['role_id'] == 2 && isset($_POST['specialties'])) {
+                $this->lessonModel->saveCoachSpecialties($_SESSION['user_id'], $_POST['specialties']);
+            }
 
             $_SESSION['first_name'] = $f['first_name'];
             if ($profileImage) {
@@ -152,12 +164,17 @@ class ProfileController extends BaseController
         $this->checkAuth();
 
         $profile = $this->profileModel->getSwimmerProfile($_SESSION['user_id']);
-
+        $coachSpecialties = [];
+        if ($_SESSION['role_id'] == 2) {
+            $coachSpecialties = $this->lessonModel->getCoachSpecialtyNames($_SESSION['user_id']);
+        }
         $data = [
             'title'   => 'Mi Perfil',
             'name'    => $_SESSION['first_name'] ?? 'Guest',
             'role_id' => $_SESSION['role_id'] ?? 3,
-            'profile' => $profile
+            'profile' => $profile,
+            'coachSpecialties' => $coachSpecialties
+
         ];
 
         $this->render('swimmer/profile.view', $data);
@@ -165,6 +182,6 @@ class ProfileController extends BaseController
 
     private function hasEmptyFields($f)
     {
-        return empty($f['first_name']) || empty($f['last_name']) || empty($f['phone'] || empty($f['birth_date']));
+        return empty($f['first_name']) || empty($f['last_name']) || empty($f['phone']) || empty($f['birth_date']);
     }
 }

@@ -1,3 +1,6 @@
+<?php
+$currentUrl = $_GET['url'] ?? 'home';
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -17,7 +20,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark primary-bg">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="?url=home">
-                
+
                 <span class="fw-bold">Alpine Natación</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar2">
@@ -28,15 +31,22 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="?url=home">Inicio</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Clases</a>
-                    </li>
-                    <?php if(isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
+                    <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 2): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="?url=coach-lessons">Clases</a>
+                        </li>
+                    <?php else: ?>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="?url=lessons">Clases</a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link" href="?url=swimmers">Alumnos</a>
                         </li>
                     <?php endif; ?>
-                    <?php if(isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
+                    <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link" href="?url=coaches">Profesores</a>
                         </li>
@@ -44,25 +54,27 @@
                 </ul>
                 <ul class="navbar-nav">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                            <?php 
-                            $foto = $_SESSION['profile_image'] ?? 'default-profile.png';
-                            $rutaFoto = Env::get('ASSET_URL') . "/img/uploads/profiles/swimmers/" . $foto;
-                             ?>
-                            <img src="<?= $rutaFoto ?>" alt="Perfil" class="profile-img-nav me-2">
-                            <span class="d-none d-lg-inline text-white"><?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="?url=logout">Cerrar Sesión</a></li>
-                        </ul>
-                    </li>
-                     <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="?url=login">Ingresar</a>
-                    </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                <?php
+                                $foto = $_SESSION['profile_image'] ?? 'default-profile.png';
+                                $rutaFoto = Env::get('ASSET_URL') . "/img/uploads/profiles/swimmers/" . $foto;
+                                ?>
+                                <img src="<?= $rutaFoto ?>" alt="Perfil" class="profile-img-nav me-2">
+                                <span class="d-none d-lg-inline text-white"><?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="?url=profile">Perfil</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-danger" href="?url=logout">Cerrar Sesión</a></li>
+                            </ul>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="?url=login">Ingresar</a>
+                        </li>
                     <?php endif; ?>
                 </ul>
             </div>

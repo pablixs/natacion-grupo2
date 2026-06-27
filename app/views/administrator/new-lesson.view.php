@@ -57,10 +57,10 @@
                                         <option value="">Seleccionar día</option>
                                         <option value="Lunes">Lunes</option>
                                         <option value="Martes">Martes</option>
-                                        <option value="Miércoles">Miércoles</option>
+                                        <option value="Miercoles">Miércoles</option>
                                         <option value="Jueves">Jueves</option>
                                         <option value="Viernes">Viernes</option>
-                                        <option value="Sábado">Sábado</option>
+                                        <option value="Sabado">Sábado</option>
                                     </select>
                                 </div>
 
@@ -70,10 +70,10 @@
                                         <option value="">Ninguno</option>
                                         <option value="Lunes">Lunes</option>
                                         <option value="Martes">Martes</option>
-                                        <option value="Miércoles">Miércoles</option>
+                                        <option value="Miercoles">Miércoles</option>
                                         <option value="Jueves">Jueves</option>
                                         <option value="Viernes">Viernes</option>
-                                        <option value="Sábado">Sábado</option>
+                                        <option value="Sabado">Sábado</option>
                                     </select>
                                 </div>
 

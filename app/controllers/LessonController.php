@@ -4,6 +4,7 @@ require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Lesson.php';
 require_once __DIR__ . '/../models/Coach.php';
 require_once __DIR__ . '/../models/Profile.php';
+require_once __DIR__ . '/../utils/SaveActivityLog.php';
 
 class LessonController extends BaseController
 {
@@ -11,6 +12,7 @@ class LessonController extends BaseController
     private $lessonModel;
     private $coachModel;
     private $profileModel;
+    private $activityLog;
 
 
     public function __construct()
@@ -21,6 +23,7 @@ class LessonController extends BaseController
         $this->lessonModel = new Lesson($pdo);
         $this->profileModel = new Profile($pdo);
         $this->coachModel = new Coach($pdo);
+        $this->activityLog = new SaveActivityLog();
     }
 
     public function manageLessonsView()
@@ -81,7 +84,7 @@ class LessonController extends BaseController
         $fields = [
             'coach_id' => trim($_POST['coach_id'] ?? ''),
             'level' => trim($_POST['level'] ?? ''),
-            'specialties' =>  $_POST['specialties'],
+            'specialties' =>  $_POST['specialties'] ?? [],
             'first_day_of_week' => trim($_POST['first_day_of_week'] ?? ''),
             'second_day_of_week' => trim($_POST['second_day_of_week'] ?? null),
             'start_time' => trim($_POST['start_time'] ?? ''),
@@ -94,10 +97,10 @@ class LessonController extends BaseController
         $days = [
             "Lunes",
             "Martes",
-            "Miércoles",
+            "Miercoles",
             "Jueves",
             "Viernes",
-            "Sábado"
+            "Sabado"
         ];
 
         $levels = [
@@ -130,13 +133,11 @@ class LessonController extends BaseController
                 return $this->json('error', 'No se pudo crear la clase.');
             }
 
-            // $this->activityLog->newLog('class_created', ['coach_id' => $fields['coach_id'], 'level' => $fields['level']]);
-            return $this->json('success', '¡Clase creada! - debug: ' . json_encode($fields) . ' - created: ' . json_encode($created));
+            $this->activityLog->newLog('class_created', ['class_name' => $fields['level'] . ' - ' . $fields['first_day_of_week'] . ' y ' . $fields['second_day_of_week']]);
+            return $this->json('success', '¡Clase creada!');
         } catch (Exception $e) {
             return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
         }
-
-        return $this->json('success', '¡Clase creada! - debug: ' . json_encode($fields) . ' - created: ');
     }
 
     public function coachLessonsView()
@@ -311,12 +312,19 @@ class LessonController extends BaseController
         }
 
         try {
+            $lesson = $this->lessonModel->getLessonById($lessonId);
+    
+            if (!$lesson) {
+                return $this->json('error', 'Clase no encontrada.');
+            }
+
             $deleted = $this->lessonModel->deleteLesson($lessonId);
 
             if (!$deleted) {
                 return $this->json('error', 'No se pudo eliminar la clase.');
             }
 
+            $this->activityLog->newLog('class_deleted', ['class_name' => $lesson['level'] . ' - ' . $lesson['first_day_of_week'] . ' y ' . $lesson['second_day_of_week']]);
             return $this->json('success', 'Clase eliminada correctamente.', '?url=manage-lessons');
         } catch (Exception $e) {
             return $this->json('error', 'No se pudo completar: ' . $e->getMessage());

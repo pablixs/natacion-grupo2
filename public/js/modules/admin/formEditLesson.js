@@ -115,17 +115,12 @@ export function initManageLessons() {
                             day: '2-digit', month: 'short', year: 'numeric'
                         });
 
-                        const statusBadge = student.status === 'Confirmed'
-                            ? '<span class="badge badge-status bg-success text-white">Activo</span>'
-                            : '<span class="badge badge-status bg-secondary text-white">Cancelado</span>';
-
                         const row = `
                             <tr>
                                 <td>${index + 1}</td>
                                 <td>${student.first_name} ${student.last_name}</td>
                                 <td>${student.email}</td>
                                 <td>${formattedDate}</td>
-                                <td>${statusBadge}</td>
                             </tr>
                         `;
                         studentsBody.insertAdjacentHTML('beforeend', row);

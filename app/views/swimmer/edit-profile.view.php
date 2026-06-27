@@ -1,6 +1,9 @@
 <?php
 include __DIR__ . '/../swimmer/layout/header.php';
 /** @var array $profile */
+/** @var int $role_id */
+/** @var array $specialties */
+/** @var array $coachSpecialtyIds */
 $currentUrl = $_GET['url'] ?? 'edit-profile';
 ?>
 
@@ -90,6 +93,23 @@ $currentUrl = $_GET['url'] ?? 'edit-profile';
                                 value="<?= htmlspecialchars($profile['birth_date']) ?>"
                                 required>
                         </div>
+
+                        <?php if ($role_id == 2): ?>
+                            <div class="col-12">
+                                <label class="form-label d-block">Especialidades</label>
+                                <div class="specialty-grid">
+                                    <?php foreach ($specialties as $specialty) : ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="specialties[]"
+                                                value="<?= $specialty['id'] ?>"
+                                                id="coachSpec<?= $specialty['id'] ?>"
+                                                <?= in_array($specialty['id'], $coachSpecialtyIds) ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="coachSpec<?= $specialty['id'] ?>"><?= $specialty['specialty'] ?></label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="mb-4">
                             <label for="email" class="form-label">Email</label>

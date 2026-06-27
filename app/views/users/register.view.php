@@ -1,27 +1,14 @@
-<?php
+<?php include __DIR__ . '/../users/layout/header.php'; ?>
 
-/** @var string $token */
-/** @var int $role_id */
-/** @var array $specialties */
-/** @var array $coachSpecialtyIds */
-include __DIR__ . '/../users/layout/header.php';
-/* Se declara la variable y el tipo para que intelephense no marque error de variable no definida */
-/** @var int $coachs_data */
-?>
-
-<div class="container my-5">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header primary-bg text-white">
-                    <h4 class="mb-0 text-center"><?php echo $title ?? 'Registro de Swimmer'; ?></h4>
-                </div>
 
-                <div class="card-body">
-                    <form id="formSaveProfile" action="?url=create-coach" method="POST" enctype="multipart/form-data">
+
+                <div class="card-body px-4">
+                    <form id="formRegister">
                         <div class="row row-cols-1 row-cols-md-2">
-                            <input type="text" id="token" value="<?= $token ?>" name="token" class="form-control" placeholder="" hidden
-                                required disabled>
                             <div class="col mb-3">
                                 <label class="form-label">Nombre</label>
                                 <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej: Juan"
@@ -34,9 +21,6 @@ include __DIR__ . '/../users/layout/header.php';
                                     required>
                             </div>
 
-
-
-
                             <div class="col mb-3">
                                 <label class="form-label">Contraseña</label>
                                 <input type="password" name="password" class="form-control"
@@ -48,9 +32,15 @@ include __DIR__ . '/../users/layout/header.php';
                                 <input type="password" name="passwordrepeat" class="form-control"
                                     placeholder="Mín. 6 caracteres" required>
                             </div>
+
                             <div class="col mb-3">
                                 <label class="form-label">Teléfono</label>
                                 <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678" required>
+                            </div>
+
+                            <div class="col mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" placeholder="ejemplo@mail.com" required>
                             </div>
 
                             <div class="col mb-3 ">
@@ -63,35 +53,29 @@ include __DIR__ . '/../users/layout/header.php';
                                 <label class="form-label">Foto de Perfil</label>
                                 <input type="file" name="profile_image" class="form-control" accept="image/*">
                             </div>
-                            <?php if ($role_id == 2): ?>
-                                <div class="col-12">
-                                    <label class="form-label d-block">Especialidades</label>
-                                    <div class="specialty-grid">
-                                        <?php foreach ($specialties as $specialty) : ?>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="specialties[]"
-                                                       value="<?= $specialty['id'] ?>"
-                                                       id="regSpec<?= $specialty['id'] ?>">
-                                                <label class="form-check-label" for="regSpec<?= $specialty['id'] ?>"><?= $specialty['specialty'] ?></label>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
 
                         </div>
 
-                        <div class="row mt-3 mx-2">
-                           <button type="submit" class="btn-submit-form w-100">
-                                </i>Completar registro
+                        <div class="row mt-3">
+                            <button type="submit" class="btn-submit-form w-100 mb-3">
+                                Registrar usuario
                             </button>
                         </div>
                     </form>
                 </div>
+
+                <div class="text-center pb-4">
+                    <a href="?url=login" class="text-decoration-none small">
+                        <i class="bi bi-arrow-left"></i> ¿Ya tenes una cuenta? Inicia sesión
+                    </a>
+                    <a href="?url=forgot-password" class="text-decoration-none small"><br>
+                        <i class="bi bi-arrow-left"></i> ¿Olvidaste tu contraseña
+                    </a>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
-
 
 <?php include __DIR__ . '/../users/layout/footer.php'; ?>

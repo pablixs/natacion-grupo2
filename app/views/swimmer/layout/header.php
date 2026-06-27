@@ -32,9 +32,16 @@
                     <li class="nav-item">
                         <a class="nav-link <?= $currentUrl === 'home' ? 'active' : '' ?>" href="?url=home">Inicio</a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link <?= in_array($currentUrl, ['lessons', 'lesson-enroll']) ? 'active' : '' ?>" href="?url=lessons">Clases</a>
-                    </li>
+                    <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 2): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="?url=coach-lessons">Clases</a>
+                        </li>
+                    <?php else: ?>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="?url=lessons">Clases</a>
+                        </li>
+                    <?php endif; ?>
                     <?php if(isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link" href="?url=swimmers">Alumnos</a>

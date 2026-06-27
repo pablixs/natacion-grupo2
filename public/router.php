@@ -17,13 +17,17 @@ require_once __DIR__ . '/../app/core/BaseController.php';
  * Usamos el parámetro 'url' definido en el .htaccess o pasado por GET.
  * Si no hay ruta ( página de inicio ), por defecto vamos a 'home'.
  */
-$route = $_GET['url'] ?? 'home';
+$route = $_GET['url'] ?? 'landing';
 
 /**
  * 2. DESPACHO DE RUTAS ( DISPATCHER )
  * El switch actúa como una tabla de decisiones.
  */
 switch ($route) {
+    case 'landing':
+        require_once __DIR__ . '/../app/controllers/LandingController.php';
+        (new LandingController())->home();
+        break;
 
     // HOME - Dashboard segun rol
     case 'home':
@@ -50,6 +54,8 @@ switch ($route) {
 
     // AUTH - Login y recuperacion de contraseña
     case 'login':
+    case 'register':
+    case 'create-account':
     case 'authenticate':
     case 'forgot-password':
     case 'send-reset':
@@ -60,6 +66,8 @@ switch ($route) {
         $controller = new AuthController();
 
         if ($route === 'login')           $controller->showLogin();
+        if ($route === 'register')           $controller->showRegister();
+        if ($route === 'create-account')           $controller->createAccount();
         if ($route === 'authenticate')    $controller->authenticate();
         if ($route === 'forgot-password') $controller->forgotPassword();
         if ($route === 'send-reset')      $controller->sendReset();
@@ -100,6 +108,11 @@ switch ($route) {
     case 'coaches':
     case 'swimmers':
     case 'manage-users-get':
+    case 'edit-user':
+    case 'update-user':
+    case 'delete-user':
+    case 'activate-user':
+    case 'admin-reset-password':
 
         require_once __DIR__ . '/../app/controllers/UserController.php';
         $controller = new UserController();
@@ -107,6 +120,11 @@ switch ($route) {
         if ($route === 'coaches')          $controller->coachesView();
         if ($route === 'swimmers')         $controller->swimmersView();
         if ($route === 'manage-users-get') $controller->getUsersAndProfiles();
+        if ($route === 'edit-user')            $controller->editUserView();
+        if ($route === 'update-user')          $controller->updateUserPost();
+        if ($route === 'delete-user')          $controller->softDeleteUserPost();
+        if ($route === 'activate-user')          $controller->enableUserPost();
+        if ($route === 'admin-reset-password') $controller->sendPasswordResetPost();
         break;
 
     // LESSONS - CRUD y visualizacion de clases

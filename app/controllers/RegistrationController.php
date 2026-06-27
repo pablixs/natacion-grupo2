@@ -3,11 +3,13 @@ require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/Profile.php';
 require_once __DIR__ . '/../models/Coach.php';
+require_once __DIR__ . '/../models/Lesson.php';
 require_once __DIR__ . '/../utils/SaveActivityLog.php';
 class RegistrationController extends BaseController
 {
     private $userModel;
     private $profileModel;
+    private $lessonModel;
     private $coachModel;
     private $activityLog;
     private $pdo;
@@ -20,9 +22,10 @@ class RegistrationController extends BaseController
         $this->userModel = new User($pdo);
         $this->profileModel = new Profile($pdo);
         $this->coachModel = new Coach($pdo);
+        $this->lessonModel = new Lesson($pdo);
         $this->activityLog = new SaveActivityLog($pdo);
     }
-    
+
     public function registerCoachView()
     {
         // Solo permitimos pasar al role id 1 (admin)
@@ -211,11 +214,13 @@ class RegistrationController extends BaseController
         };
 
         $role_id = $this->userModel->getRoleByToken($token);
+        $specialties = $this->lessonModel->getSpecialties();
 
         $data = [
             'title' => 'Completar registro',
             'token' => $_GET['token'],
-            'role_id' => $role_id
+            'role_id' => $role_id,
+            'specialties' => $specialties
         ];
 
         $this->render('users/complete-register.view', $data);
@@ -328,6 +333,14 @@ class RegistrationController extends BaseController
 
             $this->pdo->commit();
 
+            $role_id = $this->userModel->getRoleByToken($_GET['token'] ?? '');
+            if ($role_id == 2 || $this->userModel->getRoleByToken($token_id) == 2) {
+                $specialties = $_POST['specialties'] ?? [];
+                if (!empty($specialties)) {
+                    $this->lessonModel->saveCoachSpecialties($user_id, $specialties);
+                }
+            }
+
             // 1. Obtenemos la URL base del .env ( ej: http://localhost/gestion-natacion )
             $baseUrl = rtrim(Env::get('APP_URL'), '/');
 
@@ -358,6 +371,6 @@ class RegistrationController extends BaseController
 
     private function hasEmptyFields($f)
     {
-        return empty($f['first_name']) || empty($f['last_name']) || empty($f['password'] || empty($f['phone'] || empty($f['birth_date'])));
+       return empty($f['first_name']) || empty($f['last_name']) || empty($f['password']) || empty($f['phone']) || empty($f['birth_date']);
     }
 }
