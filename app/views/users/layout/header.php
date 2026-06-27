@@ -16,8 +16,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark primary-bg">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="?url=home">
-                
+            <a class="navbar-brand d-flex align-items-center" href="/natacion-grupo2">
                 <span class="fw-bold">Alpine Natación</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar2">

@@ -57,7 +57,7 @@ class User
 
 
         $stmt = $this->db->prepare('INSERT INTO users (email, password, role_id, profile_created)
-         VALUES (?, ?, ?, ?)');
+        VALUES (?, ?, ?, ?)');
 
         if ($stmt->execute([$data['email'], $hash, $roleId, $data['profile_created']])) {
             return $this->db->lastInsertId();

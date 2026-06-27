@@ -46,7 +46,7 @@ switch ( $route ) {
                 break;
                 default:
                     require_once __DIR__ . '/../app/controllers/HomeController.php';
-                    ( new HomeController() )->landing();
+                    ( new HomeController() )->index();
                 break;
             }
         } else {

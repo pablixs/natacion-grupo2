@@ -1,7 +1,35 @@
-<?php 
-include __DIR__ . '/users/layout/header.php'; 
-/** @var string $name */
-?>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title><?= $title ?? 'Escuela de Natación' ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="<?= rtrim(Env::get('ASSET_URL'), '/') ?>/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark primary-bg">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="?url=home">
+                
+                <span class="fw-bold">Alpine Natación</span>
+            </a>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="?url=home">Ingresar a la plataforma</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1 container">
 
 <section class="container d-flex align-items-center">
     <div class="row align-items-center">
