@@ -7,7 +7,6 @@ import { handleAlert } from "../../services/ui.js";
 
 export function initRegisterCoach() {
     const formSaveProfile = document.getElementById("formRegisterCoach");
-    console.log("console log antes del if: ", formSaveProfile);
     if (!formSaveProfile) return;
     formSaveProfile.addEventListener("submit", async (e) => {
         e.preventDefault();

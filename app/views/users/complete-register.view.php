@@ -39,15 +39,24 @@ include __DIR__ . '/../users/layout/header.php';
 
                             <div class="col mb-3">
                                 <label class="form-label">Contraseña</label>
-                                <input type="password" name="password" class="form-control"
-                                    placeholder="Mín. 6 caracteres" required>
+                                <div class="input-group">
+                                    <input type="password" name="password" class="form-control" placeholder="Mín. 6 caracteres" required>
+                                    <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="col mb-3">
                                 <label class="form-label">Repetir contraseña</label>
-                                <input type="password" name="passwordrepeat" class="form-control"
-                                    placeholder="Mín. 6 caracteres" required>
+                                <div class="input-group">
+                                    <input type="password" name="passwordrepeat" class="form-control" placeholder="Mín. 6 caracteres" required>
+                                    <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
+
                             <div class="col mb-3">
                                 <label class="form-label">Teléfono</label>
                                 <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678" required>
@@ -70,8 +79,8 @@ include __DIR__ . '/../users/layout/header.php';
                                         <?php foreach ($specialties as $specialty) : ?>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="specialties[]"
-                                                       value="<?= $specialty['id'] ?>"
-                                                       id="regSpec<?= $specialty['id'] ?>">
+                                                    value="<?= $specialty['id'] ?>"
+                                                    id="regSpec<?= $specialty['id'] ?>">
                                                 <label class="form-check-label" for="regSpec<?= $specialty['id'] ?>"><?= $specialty['specialty'] ?></label>
                                             </div>
                                         <?php endforeach; ?>
@@ -82,7 +91,7 @@ include __DIR__ . '/../users/layout/header.php';
                         </div>
 
                         <div class="row mt-3 mx-2">
-                           <button type="submit" class="btn-submit-form w-100">
+                            <button type="submit" class="btn-submit-form w-100">
                                 </i>Completar registro
                             </button>
                         </div>

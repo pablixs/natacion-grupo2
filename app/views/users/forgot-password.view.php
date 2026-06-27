@@ -4,7 +4,7 @@
     <div class="row justify-content-center">
         <div class="col-md-5">
 
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 mb-5">
                 <div class="card-body p-4">
 
                     <h4 class="text-center mb-4">

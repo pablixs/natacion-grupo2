@@ -69,6 +69,11 @@ include __DIR__ . '/../../administrator/layout/header.php';
                                             </a>
                                         <?php elseif (!$u['active']): ?>
                                             <span class="text-muted small">Desactivado</span>
+                                            <a href="#" class="action-btn activate btn-activate-user" title="Activar"
+                                                   data-user-id="<?= $u['id'] ?>"
+                                                   data-user-name="<?= htmlspecialchars($u['full_name']) ?>">
+                                                    <i class="fa-solid fa-user-check"></i>
+                                                </a>
                                         <?php else: ?>
                                             <span class="text-muted small">Registro pendiente</span>
                                         <?php endif; ?>

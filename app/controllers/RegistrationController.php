@@ -161,7 +161,7 @@ class RegistrationController extends BaseController
             $this->pdo->commit();
 
             // 1. Obtenemos la URL base del .env ( ej: http://localhost/gestion-natacion )
-            $baseUrl = rtrim(Env::get('APP_URL'), '/');
+            $baseUrl = rtrim(Env::get('APP_URL'), '/?url=home');
 
             // 2. Si por algún error el .env está vacío, fallamos con una base segura
             if (empty($baseUrl)) {
@@ -172,7 +172,7 @@ class RegistrationController extends BaseController
             $coachesUrl = $baseUrl . '/?url=home';
 
 
-            return $this->json('success', '¡Registro completado!');
+            return $this->json('success', '¡Registro completado!', $coachesUrl);
         } catch (Exception $e) {
             if ($this->pdo->inTransaction()) $this->pdo->rollBack();
 

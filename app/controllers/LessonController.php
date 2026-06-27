@@ -134,7 +134,7 @@ class LessonController extends BaseController
             }
 
             $this->activityLog->newLog('class_created', ['class_name' => $fields['level'] . ' - ' . $fields['first_day_of_week'] . ' y ' . $fields['second_day_of_week']]);
-            return $this->json('success', '¡Clase creada!');
+            return $this->json('success', '¡Clase creada!', '/natacion-grupo2/?url=manage-lessons');
         } catch (Exception $e) {
             return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
         }
@@ -292,7 +292,8 @@ class LessonController extends BaseController
                 return $this->json('error', 'No se pudo actualizar la clase.');
             }
 
-            return $this->json('success', '¡Clase actualizada correctamente!', '?url=manage-lessons');
+
+            return $this->json('success', '¡Clase actualizada correctamente!', '/natacion-grupo2/?url=manage-lessons');
         } catch (Exception $e) {
             return $this->json('error', 'No se pudo completar: ' . $e->getMessage());
         }

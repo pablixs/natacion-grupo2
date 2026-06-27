@@ -17,9 +17,14 @@
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" name="email" id="email" class="form-control" placeholder="tu@email.com" required>
                             </div>
-                            <div class="mb-4">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" name="password" id="password" class="form-control" placeholder="••••••••" required>
+                            <div class="col mb-3">
+                                <label class="form-label">Contraseña</label>
+                                <div class="input-group">
+                                    <input type="password" name="password" class="form-control" placeholder="Mín. 6 caracteres" required>
+                                    <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                             <button type="submit" class="btn-submit-form w-100 mb-3">
                                 <i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión
@@ -32,7 +37,7 @@
                         <a href="?url=forgot-password" class="text-decoration-none small"><br>
                             <i class="bi bi-arrow-left"></i> ¿Olvidaste tu contraseña
                         </a>
-    
+
                     </div>
                 </div>
             </div>
