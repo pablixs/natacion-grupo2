@@ -7,6 +7,7 @@ import { initTable } from "./admin/tableManageUsers.js";
 import { initRegisterCoach } from "./admin/formRegisterCoach.js"
 import { initRegisterSwimmer } from "./admin/formRegisterSwimmer.js"
 import { initNewLesson } from "./admin/formNewLesson.js"
+import { initManageLessons } from "./admin/formEditLesson.js"
 // Esperamos a que el DOM esté completamente cargado para evitar errores de referencia
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -16,5 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initRegisterCoach();
     initRegisterSwimmer();
     initNewLesson();
+    initManageLessons();
     console.log("Admin module initialized successfully.");
 });

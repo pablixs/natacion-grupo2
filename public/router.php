@@ -113,6 +113,9 @@ switch ($route) {
     case 'manage-lessons':
     case 'new-lesson':
     case 'create-lesson':
+    case 'get-lesson':
+    case 'update-lesson':
+    case 'delete-lesson':
     case 'coach-lessons':
     case 'lesson-students':
     case 'lessons':
@@ -125,10 +128,15 @@ switch ($route) {
         if ($route === 'manage-lessons')  $controller->manageLessonsView();
         if ($route === 'new-lesson')      $controller->newLessonView();
         if ($route === 'create-lesson')   $controller->newLessonPost();
+        if ($route === 'get-lesson')      $controller->getLessonData();
+        if ($route === 'update-lesson')   $controller->editLessonPost();
+        if ($route === 'delete-lesson')   $controller->deleteLessonPost();
+
+        // --- Coach / Admin: ver alumnos de una clase ---
+        if ($route === 'lesson-students') $controller->getLessonStudents();
 
         // --- Coach: ver sus clases y alumnos ---
         if ($route === 'coach-lessons')   $controller->coachLessonsView();
-        if ($route === 'lesson-students') $controller->getLessonStudents();
 
         // --- Swimmer: ver clases inscriptas y disponibles ---
         if ($route === 'lessons')         $controller->getEnrolledLessonsView();
@@ -150,18 +158,18 @@ switch ($route) {
     case 'profile':
     case 'edit-profile':
     case 'update-profile':
- 
+
         require_once __DIR__ . '/../app/controllers/ProfileController.php';
         $controller = new ProfileController();
- 
+
         if ($route === 'profile')        $controller->getSwimmerProfileView();
         if ($route === 'edit-profile')   $controller->getEditProfileView();
         if ($route === 'update-profile') $controller->updateProfile();
-    break;
+        break;
 
     // 404
     default:
         http_response_code(404);
         echo 'Error 404: La página "' . htmlspecialchars($route) . '" no existe en este sistema.';
-    break;
+        break;
 }
